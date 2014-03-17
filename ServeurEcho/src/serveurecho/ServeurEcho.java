@@ -25,6 +25,10 @@ class ServeurEcho
         {
             this.port = p;
         }
+        else
+        {
+          System.out.println("Nom de port invalide , le port"+ port + "sera attribuer au serveur");  
+        }
     }
     //constructeur
     public ServeurEcho (String tab[])
@@ -36,8 +40,12 @@ class ServeurEcho
                 int p = Integer.parseInt(tab[0]);
                 SetPort(p);
             }
-            catch (Exception e) { System.err.println( e ); }
-        }        
+            catch (Exception e) { System.out.println("Numero de port non valide fermeture du serveur"); }
+        } 
+        else if(tab.length > 1)
+        {
+            System.out.println("Nombre de parametre invalide le port :" + port + "sera donner au serveur");
+        }
     }
     
     public void Traitement()
@@ -46,6 +54,7 @@ class ServeurEcho
         {
             ServerSocket serveur = new ServerSocket( port );
             System.out.println( "Serveur echo en ligne" );
+            System.out.println("Ce serveur utilise le port : " + port);
             while(true)
             {
                 if (NbrConnexion < MAXCONNEXION)
@@ -74,13 +83,16 @@ class ServeurEcho
         }
         catch ( IOException ioe )
         {
-            System.out.println( ioe );
+            System.out.println("Port non disponible le processus vas maintenant s'arrêter");
         }
     }
     
     public static void main( String args[] )
     {
         ServeurEcho serveur = new ServeurEcho(args);
-        serveur.Traitement();
+        if ( serveur != null)
+        {
+            serveur.Traitement();
+        }
     }
 }
