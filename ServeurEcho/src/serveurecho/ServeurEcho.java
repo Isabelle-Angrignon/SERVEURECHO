@@ -1,15 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+// Serveur echo 
+// Fait par : Simon Bouchard et Isabelle Angrignon
+// Fait le  : 2014-03-17
+// Gestion d'un serveur écho ( Gestion des attributuions des sessions )
 
 package serveurecho;
 
-/**
- *
- * @author Isabelle
- */
+
 
 import java.net.*;
 import java.io.*;
@@ -20,6 +16,7 @@ class ServeurEcho
     int port = 7; //valeur par defaut
     final int NUMPORTMAX = 65535;
     final int MAXCONNEXION = 3;
+    public static int NbrConnexion = 0;
     
     void SetPort(int p)
     {
@@ -42,11 +39,11 @@ class ServeurEcho
         }        
     }
     
-    public static void main( String args[] )
+    public void Traitement()
     {
         try
         {
-            ServerSocket serveur = new ServerSocket( 7 );
+            ServerSocket serveur = new ServerSocket( port );
             System.out.println( "Serveur echo en ligne" );
             Socket client = serveur.accept();
             
@@ -57,16 +54,14 @@ class ServeurEcho
                 new OutputStreamWriter( client.getOutputStream() ) );
             
             System.out.println( "Ouverture d'une connexion" );
-            writer.println( "Bonjour! Bienvenue sur le serveur echo.\r" );
-            writer.println( "Entrez \"Q\" pour quitter.\r" );
-            writer.flush();
+           
             boolean fini = false;
             while ( ! fini )
             {
                 String ligne = reader.readLine();
-                writer.println( "Echo: " + ligne );
+                writer.println( ligne );
                 writer.flush();
-                if( ligne.trim().equals( "Q" ) )
+                if( ligne.trim().equalsIgnoreCase("Q" ) )
                 {
                     fini = true;
                 }
@@ -78,5 +73,11 @@ class ServeurEcho
         {
             System.out.println( ioe );
         }
+    }
+    
+    public static void main( String args[] )
+    {
+        ServeurEcho serveur = new ServeurEcho(args);
+        serveur.Traitement();
     }
 }
