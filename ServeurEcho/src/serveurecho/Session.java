@@ -14,7 +14,8 @@ public class Session implements Runnable
     BufferedReader reader;
     PrintWriter writer;
     Socket client;
-    public Session(Socket client)
+    int NumSession = 0;
+    public Session(Socket client , int NumeroSession)
     {
         try
         {
@@ -23,6 +24,7 @@ public class Session implements Runnable
                     new InputStreamReader( client.getInputStream() ) );
             writer = new PrintWriter(
                     new OutputStreamWriter( client.getOutputStream() ),true );
+            this.NumSession = NumeroSession;
         }
         catch(IOException ioe)
         { 
@@ -39,17 +41,17 @@ public class Session implements Runnable
             {
                 String ligne = reader.readLine();
                 writer.println( ligne );
-                System.out.println("TESTSession");
                 if( ligne.trim().equalsIgnoreCase("Q" ) )
                 {
                     fini = true;
                 }
             }
+            System.out.println("Fermeture de session " + NumSession );
             client.close();
         }
         catch(IOException ioe)
         { 
-            System.out.println("On est dans marde");
+            System.out.println("Fermeture imprévue de session " + NumSession);
         }
         finally
         {
