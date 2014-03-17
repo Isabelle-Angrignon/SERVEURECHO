@@ -22,7 +22,7 @@ public class Session implements Runnable
             reader = new BufferedReader(
                     new InputStreamReader( client.getInputStream() ) );
             writer = new PrintWriter(
-                    new OutputStreamWriter( client.getOutputStream() ) );
+                    new OutputStreamWriter( client.getOutputStream() ),true );
         }
         catch(IOException ioe)
         { 
@@ -32,6 +32,29 @@ public class Session implements Runnable
     
     public void run ()
     {
+        boolean fini = false;
+        try
+        {
+            while ( ! fini )
+            {
+                String ligne = reader.readLine();
+                writer.println( ligne );
+                writer.flush();
+                if( ligne.trim().equalsIgnoreCase("Q" ) )
+                {
+                    fini = true;
+                }
+            }
+            client.close();
+        }
+        catch(IOException ioe)
+        { 
+            System.out.println("On est dans marde");
+        }
+        finally
+        {
+            ServeurEcho.NbrConnexion--;
+        }
         
     }
     
