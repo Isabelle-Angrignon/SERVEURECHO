@@ -15,6 +15,7 @@ public class Session implements Runnable
     PrintWriter writer;
     Socket client;
     int NumSession = 0;
+    
     public Session(Socket client , int NumeroSession)
     {
         try
@@ -40,9 +41,17 @@ public class Session implements Runnable
             while ( ! fini )
             {
                 String ligne = reader.readLine();
-                writer.println( ligne );
-                if( ligne.trim().equalsIgnoreCase("Q" ) )
+                if (ligne != null )
                 {
+                    writer.println( ligne );
+                    if( ligne.trim().equalsIgnoreCase("Q" ) )
+                    {
+                        fini = true;
+                    }
+                }
+                else
+                {
+                    System.out.println("Fermeture imprévue de session " + NumSession);
                     fini = true;
                 }
             }

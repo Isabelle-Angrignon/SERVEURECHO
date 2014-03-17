@@ -48,13 +48,14 @@ class ServeurEcho
             System.out.println( "Serveur echo en ligne" );
             while(true)
             {
-                if (NbrConnexion <= 3)
+                if (NbrConnexion < MAXCONNEXION)
                 {
                     Socket client = serveur.accept();
                     System.out.println( "Ouverture de la connexion " + NbrConnexion );
                     //...creer session
-                    tableau[NbrConnexion] = new Session(client,NbrConnexion);
-                    tableau[NbrConnexion].run();
+                    Session session = new Session(client,NbrConnexion);
+                    Thread t = new Thread(session);
+                    t.start();
                     NbrConnexion++;
                 }
                 else
