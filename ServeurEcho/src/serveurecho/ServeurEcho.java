@@ -17,7 +17,7 @@ class ServeurEcho
     final int NUMPORTMAX = 65535;
     final int MAXCONNEXION = 3;
     public static int NbrConnexion = 0;
-    Session[] tableau = new Session[MAXCONNEXION];
+    int NumSession = 1;
     
     void SetPort(int p)
     {
@@ -51,12 +51,13 @@ class ServeurEcho
                 if (NbrConnexion < MAXCONNEXION)
                 {
                     Socket client = serveur.accept();
-                    System.out.println( "Ouverture de la connexion " + NbrConnexion );
+                    System.out.println( "Ouverture de la connexion " + NumSession );
                     //...creer session
-                    Session session = new Session(client,NbrConnexion);
+                    Session session = new Session(client,NumSession);
                     Thread t = new Thread(session);
                     t.start();
                     NbrConnexion++;
+                    NumSession++;
                 }
                 else
                 {
