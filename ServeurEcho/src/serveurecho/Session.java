@@ -39,7 +39,7 @@ public class Session implements Runnable
             {
                 String ligne = reader.readLine();
                 writer.println( ligne );
-                writer.flush();
+                System.out.println("TESTSession");
                 if( ligne.trim().equalsIgnoreCase("Q" ) )
                 {
                     fini = true;

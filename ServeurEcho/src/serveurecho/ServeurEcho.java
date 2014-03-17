@@ -46,11 +46,11 @@ class ServeurEcho
             ServerSocket serveur = new ServerSocket( port );
             System.out.println( "Serveur echo en ligne" );
             while(true)
-            {    
+            {
                 if (NbrConnexion <= 3)
                 {
                     Socket client = serveur.accept();
-                    System.out.println( "Ouverture d'une connexion" );
+                    System.out.println( "Ouverture de la connexion " + NbrConnexion );
                     //...creer session
                     Session session = new Session(client);
                     session.run();
