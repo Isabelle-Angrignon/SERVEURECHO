@@ -213,3 +213,5 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+/ServerurWeb/nbproject/private/
+/ServeurWeb/nbproject/private/
