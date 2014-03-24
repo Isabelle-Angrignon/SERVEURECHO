@@ -81,6 +81,7 @@ public class ServeurWeb {
                     catch (Exception e) { System.err.println( e ); }
                 }
             }
+            System.exit(1);
         }
         catch ( IOException ioe )
         {
