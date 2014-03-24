@@ -1,6 +1,7 @@
 // Nom: Terminateur.java
 // Par: Isabelle Angrignon
 // Date: 17-02-2014
+
 // But: 
 /*Vous devez écrire la classe Terminateur (fichier Terminateur.java), 
  *dont le code se résume à un thread qui, une fois lancé par un autre thread 
@@ -27,3 +28,4 @@ class Terminateur implements Runnable {
 		}
 	}
 }
+
