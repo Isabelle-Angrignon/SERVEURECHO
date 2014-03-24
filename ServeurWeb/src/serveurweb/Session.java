@@ -39,10 +39,10 @@ public class Session implements Runnable
         boolean fini = false;
         try
         {
-            System.out.println(acceuil);
+            writer.println(acceuil);
             while ( ! fini )
             {
-    /*            String ligne = reader.readLine();
+                String ligne = reader.readLine();
                 if (ligne != null )
                 {
                     writer.println( ligne );
@@ -55,7 +55,7 @@ public class Session implements Runnable
                 {
                     System.out.println("Fermeture imprévue de session " + NumSession);
                     fini = true;
-                }*/
+                }
             }
             System.out.println("Fermeture de session " + NumSession );
         }
