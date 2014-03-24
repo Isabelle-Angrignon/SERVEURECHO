@@ -74,24 +74,21 @@ public class ServeurWeb {
                         Thread.sleep(1000);
                     }
                     catch (Exception e) { System.err.println( e ); }
-                }
-                
-            }
-            
-            
+                }                
+            } 
         }
         catch ( IOException ioe )
         {
-            System.out.println("Port non disponible le processus vas maintenant s'arrêter");
+            System.out.println("Port non disponible le processus va maintenant s'arreter");
         }
     }
     
     public static void main( String args[] )
     {
         ServeurWeb serveur = new ServeurWeb(args);
-        if ( serveur != null)
-        {
+       // if ( serveur != null)
+       // {
             serveur.Traitement();
-        }
+       // }
     }
 }

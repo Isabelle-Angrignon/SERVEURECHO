@@ -58,17 +58,18 @@ public class Session implements Runnable
                 }*/
             }
             System.out.println("Fermeture de session " + NumSession );
-            client.close();
         }
         catch(IOException ioe)
         { 
-            System.out.println("Fermeture imprévue de session " + NumSession);
+            System.out.println("Fermeture imprevue de session " + NumSession);
         }
         finally
         {
             ServeurWeb.NbrConnexion--;
-        }
-        
-    }
-    
+            try
+            {
+                client.close();
+            }catch(IOException ioe) {  }
+        }        
+    }    
 }
