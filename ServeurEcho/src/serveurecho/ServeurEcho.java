@@ -3,7 +3,7 @@
 // Fait le  : 2014-03-17
 // Gestion d'un serveur écho ( Gestion des attributuions des sessions )
 
-package serveurecho;
+
 
 
 
@@ -27,7 +27,7 @@ class ServeurEcho
         }
         else
         {
-          System.out.println("Nom de port invalide , le port"+ port + "sera attribuer au serveur");  
+          System.out.println("Nom de port invalide, le port "+ port + " sera donne au serveur");  
         }
     }
     //constructeur
@@ -40,11 +40,11 @@ class ServeurEcho
                 int p = Integer.parseInt(tab[0]);
                 SetPort(p);
             }
-            catch (Exception e) { System.out.println("Numero de port non valide fermeture du serveur"); }
+            catch (Exception e) { System.out.println("Numero de port non valide, fermeture du serveur"); }
         } 
         else if(tab.length > 1)
         {
-            System.out.println("Nombre de parametre invalide le port :" + port + "sera donner au serveur");
+            System.out.println("Nombre de parametre invalide le port : " + port + " sera donne au serveur");
         }
     }
     
@@ -53,7 +53,7 @@ class ServeurEcho
         try
         {
             ServerSocket serveur = new ServerSocket( port );
-            System.out.println( "Serveur echo en ligne" );
+            System.out.println( "Serveur echo en ligne. " );
             System.out.println("Ce serveur utilise le port : " + port);
             while(true)
             {
@@ -75,15 +75,12 @@ class ServeurEcho
                         Thread.sleep(1000);
                     }
                     catch (Exception e) { System.err.println( e ); }
-                }
-                
-            }
-            
-            
+                }                
+            }  
         }
         catch ( IOException ioe )
         {
-            System.out.println("Port non disponible le processus vas maintenant s'arrêter");
+            System.out.println("Port non disponible, le processus va maintenant s'arreter");
         }
     }
     

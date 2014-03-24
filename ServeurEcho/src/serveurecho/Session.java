@@ -2,7 +2,7 @@
 // Fait par : Simon Boucahard et Isabelle Angrignon
 // Fait le 2014-03-17
 // Gestion des sessions des utilisateurs du serveur echoes
-package serveurecho;
+
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
@@ -51,22 +51,28 @@ public class Session implements Runnable
                 }
                 else
                 {
-                    System.out.println("Fermeture imprévue de session " + NumSession);
+                    System.out.println("Fermeture imprevue de session " + NumSession);
                     fini = true;
                 }
             }
             System.out.println("Fermeture de session " + NumSession );
-            client.close();
+            
         }
         catch(IOException ioe)
         { 
-            System.out.println("Fermeture imprévue de session " + NumSession);
+            System.out.println("Fermeture imprevue de session " + NumSession);
         }
         finally
         {
-            ServeurEcho.NbrConnexion--;
-        }
-        
-    }
-    
+			ServeurEcho.NbrConnexion--;
+			try
+			{
+			client.close();
+			}
+			catch(IOException ioe)
+			{ 
+				
+			}
+        }        
+    }    
 }
