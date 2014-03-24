@@ -2,13 +2,15 @@
 // Par: Isabelle Angrignon
 // Date: 17-02-2014
 // But: 
-/*Vous devez écrire la classe Terminateur (fichier Terminateur.java), 
- *dont le code se résume à un thread qui, une fois lancé par un autre thread 
- *(dans notre cas, le programme de test décrit plus loin), lit continuellement (ligne par ligne)
- * ce qui est entré au clavier et se termine lorsque la ligne lue contient 
- *uniquement le caractère "Q" ou "q", avec ou sans espaces vides avant ou après.
- *Il n'y a donc pas d'appel à System.exit dans le thread terminateur. 
+/*Vous devez Ã©crire la classe Terminateur (fichier Terminateur.java), 
+ *dont le code se rÃ©sume Ã  un thread qui, une fois lancÃ© par un autre thread 
+ *(dans notre cas, le programme de test dÃ©crit plus loin), lit continuellement (ligne par ligne)
+ * ce qui est entrÃ© au clavier et se termine lorsque la ligne lue contient 
+ *uniquement le caractÃ©re "Q" ou "q", avec ou sans espaces vides avant ou aprÃ¨s.
+ *Il n'y a donc pas d'appel Ã  System.exit dans le thread terminateur. 
  **/
+package serveurweb;
+
 import java.io.*;
 
 class Terminateur implements Runnable {

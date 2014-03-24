@@ -30,24 +30,29 @@ public class Session implements Runnable
             this.NumSession = NumeroSession;
         }
         catch(IOException ioe)
-        { 
+        {
             System.out.println("On est dans marde");
         }
     }
-      private void afficherListe(String rep) {
+    private void afficherListe(String rep)
+    {
         File repertoire = new File(rep);
-        File[] fichiers = repertoire.listFiles();
-        if (fichiers != null) 
+        String[] fichiers = repertoire.list();
+        
+        if (fichiers != null)
         {
-            for (int i = 0; i < fichiers.length; i++) 
+            for (int i = 0; i < fichiers.length; i++)
             {
-                if(fichiers[i].isFile())
-                {
-                    writer.println(fichiers[i]);
-                }
+                //writer.println("SHIT");
+                writer.println(fichiers[i]);
             }
         }
-      }
+        else
+        {
+            writer.println(repertoire);
+        }
+    }
+    
     
     public void run ()
     {
@@ -76,7 +81,7 @@ public class Session implements Runnable
             System.out.println("Fermeture de session " + NumSession );
         }
         catch(IOException ioe)
-        { 
+        {
             System.out.println("Fermeture imprevue de session " + NumSession);
         }
         finally
@@ -86,6 +91,6 @@ public class Session implements Runnable
             {
                 client.close();
             }catch(IOException ioe) {  }
-        }        
-    }    
+        }
+    }
 }
