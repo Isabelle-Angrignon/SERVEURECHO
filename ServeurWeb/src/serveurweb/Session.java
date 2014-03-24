@@ -16,7 +16,9 @@ public class Session implements Runnable
     PrintWriter writer;
     Socket client;
     int NumSession = 0;
+    final String PROMPT = "=>";
     String acceuil = "Magnifique serveur Web de Isabelle Angrignon et Simon Bouchard - version 1.0";
+    final String PATHREP = "C:\\FichiersBidons";
     
     public Session(Socket client , int NumeroSession)
     {
@@ -43,14 +45,13 @@ public class Session implements Runnable
         {
             for (int i = 0; i < fichiers.length; i++)
             {
-                //writer.println("SHIT");
                 writer.println(fichiers[i]);
             }
+            writer.println(fichiers.length + " fichier(s) disponible(s)");
+            writer.print(PROMPT);
+            writer.flush();
         }
-        else
-        {
-            writer.println(repertoire);
-        }
+        
     }
     
     
@@ -60,17 +61,13 @@ public class Session implements Runnable
         try
         {
             writer.println(acceuil);
-            afficherListe("FichiersBidons");
+            afficherListe("C:\\FichiersBidons");
             while ( ! fini )
             {
                 String ligne = reader.readLine();
                 if (ligne != null )
                 {
-                    writer.println( ligne );
-                    if( ligne.trim().equalsIgnoreCase("Q" ) )
-                    {
-                        fini = true;
-                    }
+                    TraitementRequete(ligne);
                 }
                 else
                 {
@@ -93,4 +90,91 @@ public class Session implements Runnable
             }catch(IOException ioe) {  }
         }
     }
+    
+    private void TraitementRequete (String ligne)
+    {
+        String[] laCommande = ligne.split(" ");
+        if ( laCommande.length  > 0 )
+        {
+            switch (laCommande[0].toUpperCase())
+            {
+                
+                case "GET":
+                    if (laCommande.length == 2 )
+                    {
+                        getFichier(laCommande[1]);
+                    }
+                    else
+                    {
+                        writer.println("400");
+                    }
+                    try
+                    {
+                        client.close();
+                    }catch(IOException ioe) {  }
+                    break;
+                    
+                    
+                default:
+                    writer.println("La commande : " + laCommande[0] + " n'existe pas");
+            }
+            
+        }
+        else
+        {
+            writer.println("Il n'y a aucun parametre");
+        }
+        writer.print(PROMPT);
+        writer.flush();
+    }
+    private void getFichier(String nomFichier)
+    {
+        String path = PATHREP + "\\" + nomFichier;
+        if(validerFichier(path))
+        {
+            File fichier = new File(path);
+            String s = "";
+            boolean pasFini = true;
+            try
+            {
+                BufferedReader bufferRead = new BufferedReader(new FileReader(fichier));
+                while (pasFini)
+                {
+                    s = bufferRead.readLine();
+                    if(s != null)
+                    {
+                        writer.println(s);
+                    }
+                    else
+                    {
+                        pasFini = false;
+                    }
+                }
+                bufferRead.close();
+            }
+            catch(IOException e) { e.printStackTrace(); }
+            
+        }
+    }
+    
+    
+    private boolean validerFichier(String nom)
+    {
+        File fichier = new File(nom);
+        boolean existe = false;
+        if (fichier.exists())
+        {
+            writer.println("200");
+            existe = true;
+        }
+        else
+        {
+            writer.println("404");
+        }
+        return existe;
+    }
 }
+
+
+
+
