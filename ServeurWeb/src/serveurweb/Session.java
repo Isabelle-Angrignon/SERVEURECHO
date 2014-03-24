@@ -6,6 +6,7 @@ package serveurweb;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.net.*;
 import java.io.*;
 
@@ -33,6 +34,20 @@ public class Session implements Runnable
             System.out.println("On est dans marde");
         }
     }
+      private void afficherListe(String rep) {
+        File repertoire = new File(rep);
+        File[] fichiers = repertoire.listFiles();
+        if (fichiers != null) 
+        {
+            for (int i = 0; i < fichiers.length; i++) 
+            {
+                if(fichiers[i].isFile())
+                {
+                    writer.println(fichiers[i]);
+                }
+            }
+        }
+      }
     
     public void run ()
     {
@@ -40,6 +55,7 @@ public class Session implements Runnable
         try
         {
             writer.println(acceuil);
+            afficherListe("FichiersBidons");
             while ( ! fini )
             {
                 String ligne = reader.readLine();
