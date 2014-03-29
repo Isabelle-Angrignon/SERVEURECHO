@@ -4,9 +4,9 @@
 // Gestion des sessions des utilisateurs du serveur echoes
 package serveurweb;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.nio.file.Files;
+//import java.io.BufferedReader;
+//import java.io.PrintWriter;
+//import java.nio.file.Files;
 import java.net.*;
 import java.io.*;
 
@@ -16,9 +16,14 @@ public class Session implements Runnable
     PrintWriter writer;
     Socket client;
     int NumSession = 0;
+    final int DELAI = 10000; //délai pour entrer la commande sinon fermeture
     final String PROMPT = "=>";
-    String acceuil = "Magnifique serveur Web de Isabelle Angrignon et Simon Bouchard - version 1.0";
+    String accueil = "Magnifique serveur Web de Isabelle Angrignon et Simon Bouchard - version 1.0";
     final String PATHREP = "C:\\FichiersBidons";
+    //Messages validation de fichiers:
+    final int FICHIERTROUVE = 200;
+    final int ERREURREQUETE = 400;
+    final int FICHIERNONTROUVE = 404;
     
     public Session(Socket client , int NumeroSession)
     {
@@ -42,26 +47,26 @@ public class Session implements Runnable
         String[] fichiers = repertoire.list();
         
         if (fichiers != null)
-        {
-            for (int i = 0; i < fichiers.length; i++)
-            {
-                writer.println(fichiers[i]);
+        {            
+            for (String fichier:fichiers)
+            {                
+                writer.println(fichier);
             }
             writer.println(fichiers.length + " fichier(s) disponible(s)");
             writer.print(PROMPT);
-            writer.flush();
-        }
-        
-    }
-    
+            writer.flush();//autoflush ne marche pas sur les print sans ln
+        }        
+    }    
     
     public void run ()
     {
         boolean fini = false;
         try
-        {
-            writer.println(acceuil);
-            afficherListe("C:\\FichiersBidons");
+        {            
+            writer.println(accueil);
+            afficherListe(PATHREP);
+            
+            client.setSoTimeout(DELAI);
             while ( ! fini )
             {
                 String ligne = reader.readLine();
@@ -69,17 +74,16 @@ public class Session implements Runnable
                 {
                     TraitementRequete(ligne);
                 }
-                else
-                {
-                    System.out.println("Fermeture imprévue de session " + NumSession);
-                    fini = true;
-                }
             }
             System.out.println("Fermeture de session " + NumSession );
         }
+        catch( SocketTimeoutException ste )
+        {
+           writer.println("Votre delai de " + DELAI/1000 + " sec. est ecoule.");
+        }
         catch(IOException ioe)
         {
-            System.out.println("Fermeture imprevue de session " + NumSession);
+            System.out.println("Fermeture de session " + NumSession);
         }
         finally
         {
@@ -106,7 +110,7 @@ public class Session implements Runnable
                     }
                     else
                     {
-                        writer.println("400");
+                        writer.println(ERREURREQUETE);
                     }
                     try
                     {
@@ -116,13 +120,15 @@ public class Session implements Runnable
                     
                     
                 default:
-                    writer.println("La commande : " + laCommande[0] + " n'existe pas");
+                    writer.println(ERREURREQUETE);
+                    try { client.close(); }catch(IOException ioe) {  }
             }
             
         }
         else
         {
-            writer.println("Il n'y a aucun parametre");
+            writer.println(ERREURREQUETE);
+            try { client.close(); }catch(IOException ioe) {  }
         }
         writer.print(PROMPT);
         writer.flush();
@@ -152,8 +158,7 @@ public class Session implements Runnable
                 }
                 bufferRead.close();
             }
-            catch(IOException e) { e.printStackTrace(); }
-            
+            catch(IOException e) { e.printStackTrace(); }            
         }
     }
     
@@ -164,12 +169,12 @@ public class Session implements Runnable
         boolean existe = false;
         if (fichier.exists())
         {
-            writer.println("200");
+            writer.println(FICHIERTROUVE);
             existe = true;
         }
         else
         {
-            writer.println("404");
+            writer.println(FICHIERNONTROUVE);
         }
         return existe;
     }

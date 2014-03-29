@@ -19,10 +19,12 @@ public class ServeurWeb {
     //attributs
     int port = 80; //valeur par defaut
     final int NUMPORTMAX = 65535;
-    final int MAXCONNEXION = 3;
+    final int MAXCONNEXION = 666;
+    final int DELAI = 500;
     public static int NbrConnexion = 0;
     int NumSession = 1;
     Thread threadTerminateur;
+    
     
     void SetPort(int p)
     {
@@ -61,27 +63,35 @@ public class ServeurWeb {
             AfficherPort();
             while(threadTerminateur.isAlive())
             {
-                if (NbrConnexion < MAXCONNEXION)
+                try
                 {
-                    Socket client = serveur.accept();
-                    System.out.println( "Ouverture de la connexion " + NumSession );
-                    //...creer session
-                    Session session = new Session(client,NumSession);
-                    Thread t = new Thread(session);
-                    t.start();
-                    NbrConnexion++;
-                    NumSession++;
-                }
-                else
-                {
-                    try
+                    serveur.setSoTimeout(DELAI);
+                    if (NbrConnexion < MAXCONNEXION)
                     {
-                        Thread.sleep(1000);
+                        Socket client = serveur.accept();
+                        System.out.println( "Ouverture de la connexion " + NumSession );
+                        //...creer session
+                        Session session = new Session(client,NumSession);
+                        Thread t = new Thread(session);
+                        t.start();
+                        NbrConnexion++;
+                        NumSession++;
                     }
-                    catch (Exception e) { System.err.println( e ); }
+                    else
+                    {
+                        try
+                        {
+                            Thread.sleep(1000);
+                        }
+                        catch (Exception e) { System.err.println( e ); }
+                    }
+                }
+                catch( SocketTimeoutException ste )
+                {
+                   // le délai d'inactivité est expiré, on continue                   
                 }
             }
-            System.exit(1);
+            System.exit(0);
         }
         catch ( IOException ioe )
         {
