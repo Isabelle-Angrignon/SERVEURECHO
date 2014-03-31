@@ -22,7 +22,7 @@ class Terminateur implements Runnable {
 			BufferedReader bufferRead = new BufferedReader(
 					new InputStreamReader(System.in));
 			while (!s.trim().equalsIgnoreCase("q")) { //tant qu'on n'a pas seulement un q sur la ligne,...
-				s = bufferRead.readLine();			  // on lit une ligne.
+				s = bufferRead.readLine();	  // on lit une ligne.
 			}                        
 		} catch (IOException e) {
 			e.printStackTrace();

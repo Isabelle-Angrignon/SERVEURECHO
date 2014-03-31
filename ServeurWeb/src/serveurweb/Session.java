@@ -4,9 +4,6 @@
 // Gestion des sessions des utilisateurs du serveur echoes
 package serveurweb;
 
-//import java.io.BufferedReader;
-//import java.io.PrintWriter;
-//import java.nio.file.Files;
 import java.net.*;
 import java.io.*;
 
@@ -16,10 +13,10 @@ public class Session implements Runnable
     PrintWriter writer;
     Socket client;
     int NumSession = 0;
-    final int DELAI = 10000; //délai pour entrer la commande sinon fermeture
+    final int DELAI = 20000; //délai pour entrer la commande sinon fermeture
     final String PROMPT = "=>";
     String accueil = "Magnifique serveur Web de Isabelle Angrignon et Simon Bouchard - version 1.0";
-    final String PATHREP = "C:\\FichiersBidons";
+    final String PATHREP = "C:\\ftp";
     //Messages validation de fichiers:
     final int FICHIERTROUVE = 200;
     final int ERREURREQUETE = 400;
@@ -74,20 +71,20 @@ public class Session implements Runnable
                 {
                     TraitementRequete(ligne);
                 }
-            }
-            System.out.println("Fermeture de session " + NumSession );
+            }            
         }
         catch( SocketTimeoutException ste )
         {
-           writer.println("Votre delai de " + DELAI/1000 + " sec. est ecoule.");
+           writer.println("Votre delai de " + DELAI/1000 + " sec. est ecoule.");		   
         }
         catch(IOException ioe)
         {
-            System.out.println("Fermeture de session " + NumSession);
+            //Rien a faire
         }
         finally
         {
             ServeurWeb.NbrConnexion--;
+			System.out.println("Fermeture de session " + NumSession);
             try
             {
                 client.close();
@@ -97,7 +94,8 @@ public class Session implements Runnable
     
     private void TraitementRequete (String ligne)
     {
-        String[] laCommande = ligne.split(" ");
+        String[] laCommande = ligne.trim().split("\\s+");
+        
         if ( laCommande.length  > 0 )
         {
             switch (laCommande[0].toUpperCase())
@@ -122,8 +120,7 @@ public class Session implements Runnable
                 default:
                     writer.println(ERREURREQUETE);
                     try { client.close(); }catch(IOException ioe) {  }
-            }
-            
+            }            
         }
         else
         {
@@ -160,8 +157,7 @@ public class Session implements Runnable
             }
             catch(IOException e) { e.printStackTrace(); }            
         }
-    }
-    
+    }    
     
     private boolean validerFichier(String nom)
     {

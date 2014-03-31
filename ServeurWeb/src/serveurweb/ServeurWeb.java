@@ -1,19 +1,13 @@
-/*
-* To change this license header, choose License Headers in Project Properties.
-* To change this template file, choose Tools | Templates
-* and open the template in the editor.
-*/
+// ServeurWeb.java
+// Fait par : Simon Boucahard et Isabelle Angrignon
+// Version 1: le 2014-03-31
+// Gestion d'un serveur qui sera éventuellement web
 
 package serveurweb;
 
-
-
 import java.net.*;
 import java.io.*;
-/**
- *
- * @author Isabelle
- */
+
 public class ServeurWeb {
     
     //attributs
@@ -47,12 +41,11 @@ public class ServeurWeb {
                 int p = Integer.parseInt(tab[0]);
                 SetPort(p);
             }
-            catch (Exception e) { AfficherPort(); }
+            catch (Exception e) { /*Fait rien, utilise le port par défaut*/ }
         }
         Terminateur leTerminator = new Terminateur();
 	threadTerminateur = new Thread(leTerminator);
-	threadTerminateur.start();// au constructqeur, un thread lit en boucle
-        
+	threadTerminateur.start();// au constructqeur, un thread lit en boucle        
     }
     
     public void Traitement()
@@ -69,7 +62,7 @@ public class ServeurWeb {
                     if (NbrConnexion < MAXCONNEXION)
                     {
                         Socket client = serveur.accept();
-                        System.out.println( "Ouverture de la connexion " + NumSession );
+                        System.out.println( "Ouverture de la session " + NumSession );
                         //...creer session
                         Session session = new Session(client,NumSession);
                         Thread t = new Thread(session);
