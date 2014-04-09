@@ -18,9 +18,10 @@ public class Session implements Runnable
     String accueil = "Magnifique serveur Web de Isabelle Angrignon et Simon Bouchard - version 1.0";
     String pathRep = "C:\\www";
     //Messages validation de fichiers:
-    final int FICHIERTROUVE = 200;
-    final int ERREURREQUETE = 400;
-    final int FICHIERNONTROUVE = 404;
+    final String FICHIERTROUVE = "200 Okay";
+    final String ERREURREQUETE = "400 Requete eronee";
+    final String PASIMPLEMENTE = "501 Non implemente";
+    final String FICHIERNONTROUVE = "404 Non trouve";
     
     
     
@@ -133,7 +134,7 @@ public class Session implements Runnable
                     break;
                     
                 default:
-                    writer.println(ERREURREQUETE);
+                    writer.println(PASIMPLEMENTE);
                     try { client.close(); }catch(IOException ioe) {  }
             }
         }
