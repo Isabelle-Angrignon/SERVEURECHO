@@ -16,14 +16,17 @@ public class Session implements Runnable
     final int DELAI = 20000; //délai pour entrer la commande sinon fermeture
     final String PROMPT = "=>";
     String accueil = "Magnifique serveur Web de Isabelle Angrignon et Simon Bouchard - version 1.0";
-    final String PATHREP = "C:\\ftp";
+    String pathRep = "C:\\www";
     //Messages validation de fichiers:
     final int FICHIERTROUVE = 200;
     final int ERREURREQUETE = 400;
     final int FICHIERNONTROUVE = 404;
     
-    public Session(Socket client , int NumeroSession)
+    
+    
+    public Session(Socket client , int NumeroSession , String path)
     {
+        this.pathRep = path;
         try
         {
             this.client = client;
@@ -61,7 +64,7 @@ public class Session implements Runnable
         try
         {            
             writer.println(accueil);
-            afficherListe(PATHREP);
+            afficherListe(pathRep);
             
             client.setSoTimeout(DELAI);
             while ( ! fini )
@@ -132,7 +135,7 @@ public class Session implements Runnable
     }
     private void getFichier(String nomFichier)
     {
-        String path = PATHREP + "\\" + nomFichier;
+        String path = pathRep + "\\" + nomFichier;
         if(validerFichier(path))
         {
             File fichier = new File(path);

@@ -12,9 +12,11 @@ public class ServeurWeb {
     
     //attributs
     int port = 80; //valeur par defaut
+    String pathRep = "C:\\www"; // valeur par défaut
     final int NUMPORTMAX = 65535;
     final int MAXCONNEXION = 666;
     final int DELAI = 500;
+    final String ERREUR = "-1";
     public static int NbrConnexion = 0;
     int NumSession = 1;
     Thread threadTerminateur;
@@ -29,12 +31,12 @@ public class ServeurWeb {
     }
     void AfficherPort()
     {
-        System.out.println("Serveur en ligne (port TCP " + port + ")");
+        System.out.println("Serveur en ligne (port TCP " + port + ",racine="+pathRep+")");
     }
     //constructeur
     public ServeurWeb (String tab[])
     {
-        if(tab.length == 1)
+        if(tab.length == 1 || tab.length == 2 )
         {
             try
             {
@@ -43,6 +45,22 @@ public class ServeurWeb {
             }
             catch (Exception e) { /*Fait rien, utilise le port par défaut*/ }
         }
+        if ( tab.length == 2)
+        {
+            try
+            {
+                File dossier = new File(tab[1]);
+                if ( dossier.isDirectory())
+                {
+                    pathRep = tab[1];
+                }
+                else if (!(new File(pathRep).isDirectory()))
+                {
+                    pathRep = ERREUR;
+                }
+            }
+            catch ( Exception e) {}
+        }
         Terminateur leTerminator = new Terminateur();
 	threadTerminateur = new Thread(leTerminator);
 	threadTerminateur.start();// au constructqeur, un thread lit en boucle        
@@ -50,45 +68,47 @@ public class ServeurWeb {
     
     public void Traitement()
     {
-        try
+        if ( pathRep.equals(ERREUR))
         {
-            ServerSocket serveur = new ServerSocket( port );
-            AfficherPort();
-            while(threadTerminateur.isAlive())
+            try
             {
-                try
+                ServerSocket serveur = new ServerSocket( port );
+                AfficherPort();
+                while(threadTerminateur.isAlive())
                 {
-                    serveur.setSoTimeout(DELAI);
-                    if (NbrConnexion < MAXCONNEXION)
+                    try
                     {
-                        Socket client = serveur.accept();
-                        System.out.println( "Ouverture de la session " + NumSession );
-                        //...creer session
-                        Session session = new Session(client,NumSession);
-                        Thread t = new Thread(session);
-                        t.start();
-                        NbrConnexion++;
-                        NumSession++;
-                    }
-                    else
-                    {
-                        try
+                        serveur.setSoTimeout(DELAI);
+                        if (NbrConnexion < MAXCONNEXION)
                         {
-                            Thread.sleep(1000);
+                            Socket client = serveur.accept();
+                            System.out.println( "Ouverture de la session " + NumSession );
+                            //...creer session
+                            Session session = new Session(client,NumSession,pathRep);
+                            Thread t = new Thread(session);
+                            t.start();
+                            NbrConnexion++;
+                            NumSession++;
                         }
-                        catch (Exception e) { System.err.println( e ); }
+                        else
+                        {
+                            try
+                            {
+                                Thread.sleep(1000);
+                            }
+                            catch (Exception e) { System.err.println( e ); }
+                        }
                     }
+                    catch( SocketTimeoutException ste ){ /* le délai d'inactivité est expiré, on continue */ }
                 }
-                catch( SocketTimeoutException ste )
-                {
-                   // le délai d'inactivité est expiré, on continue                   
-                }
+                System.exit(0);
             }
-            System.exit(0);
+            catch ( IOException ioe )
+            {
+                System.out.println("Port non disponible le processus va maintenant s'arreter");
+            }
         }
-        catch ( IOException ioe )
-        {
-            System.out.println("Port non disponible le processus va maintenant s'arreter");
+
         }
     } 
     
