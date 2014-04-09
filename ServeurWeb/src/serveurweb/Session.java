@@ -49,14 +49,30 @@ public class Session implements Runnable
         if (fichiers != null)
         {            
             for (String fichier:fichiers)
-            {                
-                writer.println(fichier);
+            {   
+                afficherInfos(fichier);
             }
             writer.println(fichiers.length + " fichier(s) disponible(s)");
             writer.print(PROMPT);
             writer.flush();//autoflush ne marche pas sur les print sans ln
         }        
-    }    
+    } 
+    
+    private void afficherInfos(String fichier)
+    {
+        File f = new File(fichier);
+                if (!f.isDirectory())
+                {
+                    writer.print("   ");
+                    writer.flush();
+                }
+                else 
+                {
+                    writer.print("[ ]");
+                    writer.flush();
+                }                
+                writer.print(fichier);
+    }
     
     public void run ()
     {
