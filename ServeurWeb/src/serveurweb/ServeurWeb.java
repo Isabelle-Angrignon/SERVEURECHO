@@ -33,7 +33,7 @@ public class ServeurWeb {
         System.out.println("Serveur en ligne (port TCP " + port + ",racine="+pathRep+")");
     }
     //constructeur
-    public ServeurWeb (String tab[])
+    public ServeurWeb (String tab[]) throws Exception
     {
         if(tab.length == 1 || tab.length == 2 )
         {
@@ -53,19 +53,19 @@ public class ServeurWeb {
                 {
                     pathRep = tab[1];
                 }
-                else if (!(new File(pathRep).isDirectory()))
-                {
-                    
-                }
             }
             catch ( Exception e) {}
+        }
+        else if (!(new File(pathRep).isDirectory()))
+        {
+            throw new Exception("Le serveur a tenter de se lancer sur le répertoire par défaut "+ pathRep+" mais le répertoire n'existe pas !" );
         }
         Terminateur leTerminator = new Terminateur();
 	threadTerminateur = new Thread(leTerminator);
 	threadTerminateur.start();// au constructqeur, un thread lit en boucle        
     }
     
-    public void Traitement()
+    public void Traitement() throws Exception
     {
        
         try
@@ -106,16 +106,18 @@ public class ServeurWeb {
         }
         catch ( IOException ioe )
         {
-            System.out.println("Port non disponible le processus va maintenant s'arreter");
+            throw new Exception("Le serveur a tenter de se lancer sur ce port : "+ port+" mais il est déjà occuper");
         }
     } 
     
     public static void main( String args[] )
     {
-        ServeurWeb serveur = new ServeurWeb(args);
-        // if ( serveur != null)
-        // {
-        serveur.Traitement();
-        // }
+        try
+        {
+            ServeurWeb serveur = new ServeurWeb(args);
+            serveur.Traitement();
+        }
+        catch (Exception e) {System.out.println(e.getMessage());}
+        
     }
 }
