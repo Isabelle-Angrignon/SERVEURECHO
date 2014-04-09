@@ -53,39 +53,24 @@ public class Session implements Runnable
         {            
             for (String fichier:fichiers)
             {   
-                afficherInfos(pathRep, fichier);
+                afficherInfos(rep, fichier);
             }
             writer.println(fichiers.length + " fichier(s) disponible(s)");
             writer.print(PROMPT);
             writer.flush();//autoflush ne marche pas sur les print sans ln
         }        
-    } 
-    
-    private String formaterDate(long d)
-    {       
-        SimpleDateFormat date = new SimpleDateFormat("yyyy/MM/dd");
-        return date.format(new Date(d));
-    }
-    
+    }  
     private void afficherInfos(String path, String fichier)
     {
-        File f = new File(path + "\\" + fichier);
-    //    long date = f.lastModified();
+        File f = new File(path + "\\" + fichier);   
         if (!f.isDirectory())
         {
-   //         writer.print("    ");
             writer.printf("%-30s %10s %tD %n", "    " + fichier, f.length(), f.lastModified());
         }
         else 
         {
-   //         writer.print(" [ ]");
             writer.printf("%-30s %10s %tD %n", " [ ]" + fichier, f.length(), f.lastModified());
-   //         writer.printf("%-30s %-10s %tD %n", " [ ]" + f.getName(), f.length(), f.lastModified());
         }                
-  //      writer.print(fichier);
-  //      writer.format("%20s", f.length());
-  //      writer.format("%35s", formaterDate(date));
-  //      writer.println();
     }
     
     public void run ()
