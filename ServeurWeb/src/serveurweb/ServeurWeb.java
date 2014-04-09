@@ -16,7 +16,6 @@ public class ServeurWeb {
     final int NUMPORTMAX = 65535;
     final int MAXCONNEXION = 666;
     final int DELAI = 500;
-    final String ERREUR = "-1";
     public static int NbrConnexion = 0;
     int NumSession = 1;
     Thread threadTerminateur;
@@ -52,11 +51,11 @@ public class ServeurWeb {
                 File dossier = new File(tab[1]);
                 if ( dossier.isDirectory())
                 {
-                    pathRep = tab[1];
+                    pathRep = tab[1]; 121
                 }
                 else if (!(new File(pathRep).isDirectory()))
                 {
-                    pathRep = ERREUR;
+                    
                 }
             }
             catch ( Exception e) {}
@@ -68,47 +67,46 @@ public class ServeurWeb {
     
     public void Traitement()
     {
-        if ( pathRep.equals(ERREUR))
+       
+        try
         {
-            try
+            ServerSocket serveur = new ServerSocket( port );
+            AfficherPort();
+            while(threadTerminateur.isAlive())
             {
-                ServerSocket serveur = new ServerSocket( port );
-                AfficherPort();
-                while(threadTerminateur.isAlive())
+                try
                 {
-                    try
+                    serveur.setSoTimeout(DELAI);
+                    if (NbrConnexion < MAXCONNEXION)
                     {
-                        serveur.setSoTimeout(DELAI);
-                        if (NbrConnexion < MAXCONNEXION)
-                        {
-                            Socket client = serveur.accept();
-                            System.out.println( "Ouverture de la session " + NumSession );
-                            //...creer session
-                            Session session = new Session(client,NumSession,pathRep);
-                            Thread t = new Thread(session);
-                            t.start();
-                            NbrConnexion++;
-                            NumSession++;
-                        }
-                        else
-                        {
-                            try
-                            {
-                                Thread.sleep(1000);
-                            }
-                            catch (Exception e) { System.err.println( e ); }
-                        }
+                        Socket client = serveur.accept();
+                        System.out.println( "Ouverture de la session " + NumSession );
+                        //...creer session
+                        Session session = new Session(client,NumSession,pathRep);
+                        Thread t = new Thread(session);
+                        t.start();
+                        NbrConnexion++;
+                        NumSession++;
                     }
-                    catch( SocketTimeoutException ste ){ /* le délai d'inactivité est expiré, on continue */ }
+                    else
+                    {
+                        try
+                        {
+                            Thread.sleep(1000);
+                        }
+                        catch (Exception e) { System.err.println( e ); }
+                    }
                 }
-                System.exit(0);
+                catch( SocketTimeoutException ste )
+                {
+                   // le délai d'inactivité est expiré, on continue                   
+                }
             }
-            catch ( IOException ioe )
-            {
-                System.out.println("Port non disponible le processus va maintenant s'arreter");
-            }
+            System.exit(0);
         }
-
+        catch ( IOException ioe )
+        {
+            System.out.println("Port non disponible le processus va maintenant s'arreter");
         }
     } 
     
