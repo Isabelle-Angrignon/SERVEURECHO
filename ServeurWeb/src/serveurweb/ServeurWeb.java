@@ -56,7 +56,7 @@ public class ServeurWeb {
             }
             catch ( Exception e) {}
         }
-        else if (!(new File(pathRep).isDirectory()))
+        if (!(new File(pathRep).isDirectory()))
         {
             throw new Exception("Le serveur a tenter de se lancer sur le répertoire par défaut "+ pathRep+" mais le répertoire n'existe pas !" );
         }
