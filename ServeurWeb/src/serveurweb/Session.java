@@ -6,6 +6,9 @@ package serveurweb;
 
 import java.net.*;
 import java.io.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Session implements Runnable
 {
@@ -58,26 +61,31 @@ public class Session implements Runnable
         }        
     } 
     
+    private String formaterDate(long d)
+    {       
+        SimpleDateFormat date = new SimpleDateFormat("yyyy/MM/dd");
+        return date.format(new Date(d));
+    }
+    
     private void afficherInfos(String path, String fichier)
     {
         File f = new File(path + "\\" + fichier);
-        long date = f.lastModified();
-        
+    //    long date = f.lastModified();
         if (!f.isDirectory())
         {
-            writer.print("   ");
+   //         writer.print("    ");
+            writer.printf("%-30s %10s %tD %n", "    " + fichier, f.length(), f.lastModified());
         }
         else 
         {
-            writer.print("[ ]");
+   //         writer.print(" [ ]");
+            writer.printf("%-30s %10s %tD %n", " [ ]" + fichier, f.length(), f.lastModified());
+   //         writer.printf("%-30s %-10s %tD %n", " [ ]" + f.getName(), f.length(), f.lastModified());
         }                
-        writer.print(fichier);
-        writer.print("   ");
-        writer.print(f.length());
-        writer.print("   ");
-
-        writer.print(date);
-        writer.println();
+  //      writer.print(fichier);
+  //      writer.format("%20s", f.length());
+  //      writer.format("%35s", formaterDate(date));
+  //      writer.println();
     }
     
     public void run ()
