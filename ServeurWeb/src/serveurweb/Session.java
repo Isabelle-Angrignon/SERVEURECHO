@@ -50,7 +50,7 @@ public class Session implements Runnable
         {            
             for (String fichier:fichiers)
             {   
-                afficherInfos(fichier);
+                afficherInfos(pathRep, fichier);
             }
             writer.println(fichiers.length + " fichier(s) disponible(s)");
             writer.print(PROMPT);
@@ -58,20 +58,26 @@ public class Session implements Runnable
         }        
     } 
     
-    private void afficherInfos(String fichier)
+    private void afficherInfos(String path, String fichier)
     {
-        File f = new File(fichier);
-                if (!f.isDirectory())
-                {
-                    writer.print("   ");
-                    writer.flush();
-                }
-                else 
-                {
-                    writer.print("[ ]");
-                    writer.flush();
-                }                
-                writer.print(fichier);
+        File f = new File(path + "\\" + fichier);
+        long date = f.lastModified();
+        
+        if (!f.isDirectory())
+        {
+            writer.print("   ");
+        }
+        else 
+        {
+            writer.print("[ ]");
+        }                
+        writer.print(fichier);
+        writer.print("   ");
+        writer.print(f.length());
+        writer.print("   ");
+
+        writer.print(date);
+        writer.println();
     }
     
     public void run ()
