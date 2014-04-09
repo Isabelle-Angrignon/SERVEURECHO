@@ -12,7 +12,7 @@ public class ServeurWeb {
     
     //attributs
     int port = 80; //valeur par defaut
-    String pathRep = "C:\\www"; // valeur par défaut
+    String pathRep = "C:/www"; // valeur par défaut
     final int NUMPORTMAX = 65535;
     final int MAXCONNEXION = 666;
     final int DELAI = 500;

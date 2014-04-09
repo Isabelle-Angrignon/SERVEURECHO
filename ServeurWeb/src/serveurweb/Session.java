@@ -6,9 +6,6 @@ package serveurweb;
 
 import java.net.*;
 import java.io.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class Session implements Runnable
 {
@@ -48,36 +45,36 @@ public class Session implements Runnable
     {
         File repertoire = new File(rep);
         String[] fichiers = repertoire.list();
-        
+        writer.println("Contenu du repertoire " + rep);
         if (fichiers != null)
-        {            
+        {
             for (String fichier:fichiers)
-            {   
+            {
                 afficherInfos(rep, fichier);
             }
             writer.println(fichiers.length + " fichier(s) disponible(s)");
             writer.print(PROMPT);
             writer.flush();//autoflush ne marche pas sur les print sans ln
-        }        
-    }  
+        }
+    }
     private void afficherInfos(String path, String fichier)
     {
-        File f = new File(path + "\\" + fichier);   
+        File f = new File(path + "\\" + fichier);
         if (!f.isDirectory())
         {
             writer.printf("%-30s %10s %tD %n", "    " + fichier, f.length(), f.lastModified());
         }
-        else 
+        else
         {
             writer.printf("%-41s %tD %n", " [ ]" + fichier, f.lastModified());
-        }                
+        }
     }
     
     public void run ()
     {
         boolean fini = false;
         try
-        {            
+        {
             writer.println(accueil);
             afficherListe(pathRep);
             
@@ -89,11 +86,11 @@ public class Session implements Runnable
                 {
                     TraitementRequete(ligne);
                 }
-            }            
+            }
         }
         catch( SocketTimeoutException ste )
         {
-           writer.println("Votre delai de " + DELAI/1000 + " sec. est ecoule.");		   
+            writer.println("Votre delai de " + DELAI/1000 + " sec. est ecoule.");
         }
         catch(IOException ioe)
         {
@@ -102,11 +99,12 @@ public class Session implements Runnable
         finally
         {
             ServeurWeb.NbrConnexion--;
-			System.out.println("Fermeture de session " + NumSession);
+            System.out.println("Fermeture de session " + NumSession);
             try
             {
                 client.close();
-            }catch(IOException ioe) {  }
+            }
+            catch(IOException ioe) {  }
         }
     }
     
@@ -134,11 +132,10 @@ public class Session implements Runnable
                     }catch(IOException ioe) {  }
                     break;
                     
-                    
                 default:
                     writer.println(ERREURREQUETE);
                     try { client.close(); }catch(IOException ioe) {  }
-            }            
+            }
         }
         else
         {
@@ -153,7 +150,7 @@ public class Session implements Runnable
         String path = pathRep + "\\" + nomFichier;
         if(validerFichier(path))
         {
-            File fichier = new File(path);            
+            File fichier = new File(path);
             int b = -1;
             boolean pasFini = true;
             try
@@ -166,7 +163,7 @@ public class Session implements Runnable
                     b = in.read();
                     if(b != -1)
                     {
-                          out.write(b);
+                        out.write(b);
                     }
                     else
                     {
@@ -176,9 +173,9 @@ public class Session implements Runnable
                 in.close();
                 out.close();
             }
-            catch(IOException e) { e.printStackTrace(); }            
+            catch(IOException e) { e.printStackTrace(); }
         }
-    }    
+    }
     
     private boolean validerFichier(String nom)
     {
