@@ -58,7 +58,7 @@ public class ServeurWeb {
         }
         if (!(new File(pathRep).isDirectory()))
         {
-            throw new Exception("Le serveur a tenter de se lancer sur le répertoire par défaut "+ pathRep+" mais le répertoire n'existe pas !" );
+            throw new Exception("Le serveur a tente de se lancer sur le repertoire par defaut "+ pathRep+" mais ce repertoire n'existe pas !" );
         }
         Terminateur leTerminator = new Terminateur();
 	threadTerminateur = new Thread(leTerminator);
