@@ -69,7 +69,7 @@ public class Session implements Runnable
         }
         else 
         {
-            writer.printf("%-30s %10s %tD %n", " [ ]" + fichier, f.length(), f.lastModified());
+            writer.printf("%-41s %tD %n", " [ ]" + fichier, f.lastModified());
         }                
     }
     
@@ -153,25 +153,28 @@ public class Session implements Runnable
         String path = pathRep + "\\" + nomFichier;
         if(validerFichier(path))
         {
-            File fichier = new File(path);
-            String s = "";
+            File fichier = new File(path);            
+            int b = -1;
             boolean pasFini = true;
             try
             {
-                BufferedReader bufferRead = new BufferedReader(new FileReader(fichier));
+                //transfert en binaire
+                BufferedInputStream in = new BufferedInputStream(new FileInputStream(fichier));
+                OutputStream out = client.getOutputStream();
                 while (pasFini)
                 {
-                    s = bufferRead.readLine();
-                    if(s != null)
+                    b = in.read();
+                    if(b != -1)
                     {
-                        writer.println(s);
+                          out.write(b);
                     }
                     else
                     {
                         pasFini = false;
                     }
                 }
-                bufferRead.close();
+                in.close();
+                out.close();
             }
             catch(IOException e) { e.printStackTrace(); }            
         }
