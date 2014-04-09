@@ -24,7 +24,7 @@ public class ServeurWeb {
     
     void SetPort(int p)
     {
-        if (p > 0 && p < NUMPORTMAX)
+        if (p < NUMPORTMAX && p > 0)
         {
             this.port = p;
         }
