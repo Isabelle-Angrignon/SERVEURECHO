@@ -51,7 +51,7 @@ public class ServeurWeb {
                 File dossier = new File(tab[1]);
                 if ( dossier.isDirectory())
                 {
-                    pathRep = tab[1]; 121
+                    pathRep = tab[1];
                 }
                 else if (!(new File(pathRep).isDirectory()))
                 {
