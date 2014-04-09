@@ -53,8 +53,6 @@ public class Session implements Runnable
                 afficherInfos(rep, fichier);
             }
             writer.println(fichiers.length + " fichier(s) disponible(s)");
-            writer.print(PROMPT);
-            writer.flush();//autoflush ne marche pas sur les print sans ln
         }
     }
     private void afficherInfos(String path, String fichier)
@@ -77,6 +75,8 @@ public class Session implements Runnable
         {
             writer.println(accueil);
             afficherListe(pathRep);
+            writer.print(PROMPT);
+            writer.flush();//autoflush ne marche pas sur les print sans ln
             
             client.setSoTimeout(DELAI);
             while ( ! fini )
@@ -120,7 +120,7 @@ public class Session implements Runnable
                 case "GET":
                     if (laCommande.length == 2 )
                     {
-                        getFichier(laCommande[1]);
+                        traiterRequeteGet(laCommande[1]);
                     }
                     else
                     {
@@ -145,12 +145,24 @@ public class Session implements Runnable
         writer.print(PROMPT);
         writer.flush();
     }
-    private void getFichier(String nomFichier)
+    private void traiterRequeteGet(String nomFichier)
     {
         String path = pathRep + "\\" + nomFichier;
         if(validerFichier(path))
         {
             File fichier = new File(path);
+            if ( !fichier.isDirectory())
+            {
+                traiterFichier(fichier);
+            }
+            else
+            {
+                afficherListe(path);
+            }
+        }
+    }
+    private void traiterFichier (File  fichier)
+    {
             int b = -1;
             boolean pasFini = true;
             try
@@ -174,8 +186,8 @@ public class Session implements Runnable
                 out.close();
             }
             catch(IOException e) { e.printStackTrace(); }
-        }
     }
+    
     
     private boolean validerFichier(String nom)
     {
