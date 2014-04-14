@@ -170,7 +170,7 @@ public class Session implements Runnable
             {
                 //transfert en binaire
                 BufferedInputStream in = new BufferedInputStream(new FileInputStream(fichier));
-                OutputStream out = client.getOutputStream();
+                BufferedOutputStream out = new BufferedOutputStream(client.getOutputStream());
                 while (pasFini)
                 {
                     b = in.read();
