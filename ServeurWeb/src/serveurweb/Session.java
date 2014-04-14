@@ -43,31 +43,33 @@ public class Session implements Runnable
         }
     }
     
-    // Affiche la liste de fichier
+    // Affiche la liste de fichier a télécharger
     private void afficherListe(String rep)
     {
         File repertoire = new File(rep);
         String[] fichiers = repertoire.list();
-        writer.println("Contenu du repertoire " + rep);
-        if (fichiers != null)
-        {
-            for (String fichier:fichiers)
-            {
-                afficherInfos(rep, fichier);
-            }
-            writer.println(fichiers.length + " fichier(s) disponible(s)");
+        writer.println("Contenu du repertoire " + rep);                         ///////////////////////////////////////////////
+        if (fichiers != null)                                                   //       Pour chaque fichier dans le 
+        {                                                                       //       path on appel la méthode afficher
+            for (String fichier:fichiers)                                       //       info qui affichera de facon structurer 
+            {                                                                   //       le fichier
+                afficherInfos(rep, fichier);                                    //
+            }                                                                   //
+            writer.println(fichiers.length + " fichier(s) disponible(s)");      ////////////////////////////////////////////////
         }
     }
+    
+    // Sert a structurer la facon d'afficher les informations relier sur le fichier
     private void afficherInfos(String path, String fichier)
     {
         File f = new File(path + "\\" + fichier);
         if (!f.isDirectory())
         {
-            writer.printf("%-30s %10s %tD %n", "    " + fichier, f.length(), f.lastModified());
+            writer.printf("%-30s %10s %tD %n", "    " + fichier, f.length(), f.lastModified()); // Utilise printf vielle méthode du c
         }
         else
         {
-            writer.printf("%-41s %tD %n", " [ ]" + fichier, f.lastModified());
+            writer.printf("%-41s %tD %n", " [ ]" + fichier, f.lastModified());      // Utilise printf vielle méthode du c
         }
     }
     
