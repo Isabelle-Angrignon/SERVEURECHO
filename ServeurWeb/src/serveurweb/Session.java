@@ -1,5 +1,5 @@
 // Session.java
-// Fait par : Simon Boucahard et Isabelle Angrignon
+// Fait par : Simon Bouchard et Isabelle Angrignon
 // Fait le 2014-03-17
 // Gestion des sessions des utilisateurs du serveur echoes
 package serveurweb;
