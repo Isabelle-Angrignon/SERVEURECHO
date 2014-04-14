@@ -11,7 +11,7 @@ public class Session implements Runnable
 {
     BufferedReader reader;  // Flux de texte 
     PrintWriter writer;     // Flux de texte
-    Socket client;          // Le client passer par le serveur
+    Socket client;          // Le client passé par le serveur
     int NumSession = 0;     
     final int DELAI = 20000; //délai pour entrer la commande sinon fermeture
     final String PROMPT = "=>";

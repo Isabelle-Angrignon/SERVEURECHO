@@ -1,5 +1,5 @@
 // ServeurWeb.java
-// Fait par : Simon Boucahard et Isabelle Angrignon
+// Fait par : Simon Bouchard et Isabelle Angrignon
 // Version 1: le 2014-03-31
 // Gestion d'un serveur qui sera éventuellement web
 
@@ -117,7 +117,7 @@ public class ServeurWeb {
         }
         catch ( IOException ioe )
         {
-            throw new Exception("Le serveur a tenter de se lancer sur ce port : "+ port+" mais il est déjà occuper");
+            throw new Exception("Le serveur a tente de se lancer sur ce port : "+ port+" mais il est deja occupe");
         }
     }
     
