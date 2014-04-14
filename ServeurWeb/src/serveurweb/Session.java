@@ -9,39 +9,41 @@ import java.io.*;
 
 public class Session implements Runnable
 {
-    BufferedReader reader;
-    PrintWriter writer;
-    Socket client;
-    int NumSession = 0;
+    BufferedReader reader;  // Flux de texte 
+    PrintWriter writer;     // Flux de texte
+    Socket client;          // Le client passer par le serveur
+    int NumSession = 0;     
     final int DELAI = 20000; //délai pour entrer la commande sinon fermeture
     final String PROMPT = "=>";
     String accueil = "Magnifique serveur Web de Isabelle Angrignon et Simon Bouchard - version 1.0";
-    String pathRep = "C:\\www";
+    String pathRep = "C:\\www";     // Path des fichier a télécherger
     //Messages validation de fichiers:
-    final String FICHIERTROUVE = "200 Okay";
-    final String ERREURREQUETE = "400 Requete eronee";
-    final String PASIMPLEMENTE = "501 Non implemente";
-    final String FICHIERNONTROUVE = "404 Non trouve";
+    final String FICHIERTROUVE = "200 Okay";                //|--------------------|//
+    final String ERREURREQUETE = "400 Requete eronee";      //| Message d'érreure  |//
+    final String PASIMPLEMENTE = "501 Non implemente";      //|                    |//
+    final String FICHIERNONTROUVE = "404 Non trouve";       //|--------------------|//
     
     
-    
+    // Constructeur
     public Session(Socket client , int NumeroSession , String path)
     {
-        this.pathRep = path;
+        this.pathRep = path;    // Le path est bon on le sait puisque le serveur l'a vérifié
         try
         {
-            this.client = client;
-            reader = new BufferedReader(
-                    new InputStreamReader( client.getInputStream() ) );
-            writer = new PrintWriter(
-                    new OutputStreamWriter( client.getOutputStream() ),true );
-            this.NumSession = NumeroSession;
+            this.client = client;                                               ////////////////////////////////////////////////
+            reader = new BufferedReader(                                        //    On établie la connexion entre la session
+                    new InputStreamReader( client.getInputStream() ) );         //      et le client , on établi aussi les 
+            writer = new PrintWriter(                                           //      flux de texte. les flux binaires     
+                    new OutputStreamWriter( client.getOutputStream() ),true );  //      seront instauré plus tard
+            this.NumSession = NumeroSession;                                    ////////////////////////////////////////////////
         }
         catch(IOException ioe)
         {
             System.out.println("On est dans marde");
         }
     }
+    
+    // Affiche la liste de fichier
     private void afficherListe(String rep)
     {
         File repertoire = new File(rep);
