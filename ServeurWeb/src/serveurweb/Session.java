@@ -19,7 +19,7 @@ public class Session implements Runnable
     String pathRep = "C:\\www";     // Path des fichier a télécherger
     //Messages validation de fichiers:
     final String FICHIERTROUVE = "200 Okay";                //|--------------------|//
-    final String ERREURREQUETE = "400 Requete eronee";      //| Message d'érreure  |//
+    final String ERREURREQUETE = "400 Requete erronee";      //| Message d'erreurs  |//
     final String PASIMPLEMENTE = "501 Non implemente";      //|                    |//
     final String FICHIERNONTROUVE = "404 Non trouve";       //|--------------------|//
     
