@@ -83,14 +83,13 @@ public class Session implements Runnable
             // recevoir requete  
             String maLigne;
             String ligne = maLigne = reader.readLine();
-            while (!ligne.equals("") )
+            //Consommer l'entête du browser
+            while (!ligne.equals(""))
             {
                 ligne = reader.readLine();
             }
-            {
-                //envoi page
-                TraitementRequete(maLigne);
-            }
+            //envoi page
+            TraitementRequete(maLigne);            
         }        
         catch(IOException ioe)
         {
@@ -116,8 +115,7 @@ public class Session implements Runnable
         if ( laCommande.length  > 0 )
         {
             switch (laCommande[0].toUpperCase())
-            {
-                
+            {                
                 case "GET":
                     if (laCommande.length == 3 )
                     {
@@ -151,15 +149,14 @@ public class Session implements Runnable
         if(validerFichier(path))
         {
             File fichier = new File(path);
+            genererEntete(fichier);//ajouter un head
             if ( !fichier.isDirectory())
-            {
-                genererEnteteFichier(fichier);//ajouter un head
+            {                
                 traiterFichier(fichier);
             }
             else
             {
-                //serie de check index.html...et ultimement
-                genererEnteteDossier();//ajouter un head
+                //serie de check index.html...et ultimement                
                 traiterDossier(fichier);                
             }
         }
@@ -195,15 +192,14 @@ public class Session implements Runnable
         }        
     }
     
-    private void genererEnteteFichier(File fichier)
+    private void genererEntete(File fichier)
     {        
         //PROTOCOLE + message réussite  AFFICHÉ PLUS HAUT
         Date dateM = new Date(fichier.lastModified());
         String extension = (fichier.getName().split("\\."))[1];
         String type = getType(extension);
         Date dateJ = new Date();
-        
-        
+                
         writer.println("Server: " + NOMSERVEUR);
         writer.println("Date: "+ getDateRfc822(dateJ));
         //Si le type n'est pas géré, la ligne sera omise...
@@ -215,10 +211,6 @@ public class Session implements Runnable
         writer.println("Content-Length: " + fichier.length());
         
         writer.println();
-    }
-    private void genererEnteteDossier()
-    {
-        
     }
     
     private void traiterFichier (File  fichier)
