@@ -130,6 +130,21 @@ public class Session implements Runnable
                         client.close();
                     }catch(IOException ioe) {  }
                     break;
+                case "HEAD":
+                    if (laCommande.length == 3 )
+                    {
+                        traiterRequeteHead(laCommande[1]);                        
+                    }
+                    else
+                    {
+                        writer.println(PROTOCOLE + " " + ERREURREQUETE);
+                    }
+                    try
+                    {
+                        client.close();
+                    }catch(IOException ioe) {  }
+                    break;    
+                    
                     
                 default:
                     writer.println(PROTOCOLE + " " + PASIMPLEMENTE);
@@ -161,7 +176,16 @@ public class Session implements Runnable
             }
         }
     }
-    
+    private void traiterRequeteHead(String nomFichier)
+    {
+        String path = pathRep + nomFichier;
+        if(validerFichier(path))
+        {
+            File fichier = new File(path);
+            genererEntete(fichier);//ajouter un head            
+        }
+    }
+            
     //cadeau du prof....
     private String getDateRfc822(Date date)
     {
