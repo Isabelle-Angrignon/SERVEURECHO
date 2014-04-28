@@ -10,15 +10,22 @@ import java.io.*;
 
 public class ServeurWeb {
     
-    //attributs
+    //attributs config
     int port = 80; //valeur par defaut
-    String pathRep = "C:\\www"; // valeur par défaut
+    String index = "";
+    String listage = "non";
+    String pathRep = "C:\\www"; 
+    String racine = pathRep;
+   // Configuration maConf = new Configuration();
+    
+    //Autres attibuts et constantes
     final int NUMPORTMAX = 65535;
     final int MAXCONNEXION = 666; // Pour Daren
     final int DELAI = 500; // pour éviter de tourner dans le beure si on est a 667 conn et plus
     public static int NbrConnexion = 0; // Variable entre session et serveur pour communiquer le nombre de connexion
     int NumSession = 1;         // Le numero de session a titre informatif !!! 
-    Thread threadTerminateur;   
+    Thread threadTerminateur;
+    
     
     // S'assure que le port rentre dans les limitations des ports habituel.
     void SetPort(int p)
@@ -37,17 +44,59 @@ public class ServeurWeb {
     
     //constructeur
     public ServeurWeb (String tab[]) throws Exception
-    {
+    { 
+        // gérer fichier config
+ //       lireConfig();
+        
         GestionParametre(tab);
         if (!(new File(pathRep).isDirectory())) // Si le dossier par défaut n'existe pas et que le dossier n'a pas été enter ou est incorecte on court apres le trouble
         {
             throw new Exception("Le serveur a tente de se lancer sur le repertoire par defaut "+ pathRep+" mais ce repertoire n'existe pas !" );
-        }
+        }       
         Terminateur leTerminator = new Terminateur();   // Initialisation du terminateur qui tuera le serveur si on entre la touche Q
 	threadTerminateur = new Thread(leTerminator);
 	threadTerminateur.start();// au constructqeur, un thread lit en boucle        
     }
     
+    private void lireConfig()
+    {  
+        String param ="";
+        boolean fini = false;
+        File config = new File("FichierServeur/config.txt");
+        try
+        {           
+           BufferedReader reader = new BufferedReader(new FileReader(config));
+           while(!fini)
+           {
+               param = reader.readLine();
+               if (!param.equals(""))
+               {
+                   if ((param.split("=")[0]).equals("port"))
+                   {
+                      /* maConf.*/port = Integer.parseInt(reader.readLine().split("=")[1]);
+                   }
+                   else if ((param.split("=")[0]).equals("racine"))
+                   {
+                       /*maConf.*/racine = reader.readLine().split("=")[1];
+                   }
+                   else if ((param.split("=")[0]).equals("index"))
+                   {
+                 /*      maConf.*/index = reader.readLine().split("=")[1];
+                   }
+                   else if ((param.split("=")[0]).equals("index"))
+                   {
+                   /*    maConf.*/listage = reader.readLine().split("=")[1];
+                   }
+               }
+               else 
+               {
+                   fini = true;
+               }
+           }
+           reader.close();
+        }
+        catch(IOException e) { e.printStackTrace(); }        
+    }
     
     void GestionParametre (String tab[])
     {
