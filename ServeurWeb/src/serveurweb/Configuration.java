@@ -97,7 +97,7 @@ public class Configuration
         this.index = Index;
     }
     public String getRacine()   {return this.racine;    }
-    public String getNomIndex() {return this.racine;    }
+    public String getNomIndex() {return this.index;    }
     public int getPort()        {return this.port;      }
     public boolean getListage() {return this.listage;   }
     
