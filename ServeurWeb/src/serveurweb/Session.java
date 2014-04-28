@@ -108,6 +108,32 @@ public class Session implements Runnable
         }
     }
     
+    private void afficherPageErreur(String erreur)
+    {        
+        File fichierErreur;        
+        switch (erreur)
+        {
+            case "ERREURREQUETE"://400
+                fichierErreur = new File("FichierServeur/400_Serveur_web.html");
+                break;
+            case "INTERDIT"://403
+                fichierErreur = new File("FichierServeur/403_Serveur_web.html");
+                break;
+            case "FICHIERNONTROUVE"://404
+                fichierErreur = new File("FichierServeur/404_Serveur_web.html");
+                break;
+            case "PASIMPLEMENTE"://501
+                fichierErreur = new File("FichierServeur/501_Serveur_web.html");
+                break; 
+            default:
+                fichierErreur = new File("FichierServeur/404_Serveur_web.html");
+                break;
+        } 
+        writer.println(PROTOCOLE + " " + erreur); 
+        genererEntete(fichierErreur);
+        traiterFichier(fichierErreur);
+    }
+    
     private void TraitementRequete (String ligne)
     {
         String[] laCommande = ligne.trim().split("\\s+");
@@ -122,8 +148,8 @@ public class Session implements Runnable
                         traiterRequeteGet(laCommande[1]);                        
                     }
                     else
-                    {
-                        writer.println(PROTOCOLE + " " + ERREURREQUETE);
+                    {                                           
+                        afficherPageErreur(ERREURREQUETE);
                     }
                     try
                     {
@@ -137,7 +163,7 @@ public class Session implements Runnable
                     }
                     else
                     {
-                        writer.println(PROTOCOLE + " " + ERREURREQUETE);
+                        afficherPageErreur(ERREURREQUETE);
                     }
                     try
                     {
@@ -147,13 +173,13 @@ public class Session implements Runnable
                     
                     
                 default:
-                    writer.println(PROTOCOLE + " " + PASIMPLEMENTE);
+                    afficherPageErreur(PASIMPLEMENTE);
                     try { client.close(); }catch(IOException ioe) {  }
             }
         }
         else
         {
-            writer.println(PROTOCOLE + " " + ERREURREQUETE);
+            afficherPageErreur(ERREURREQUETE);
             try { client.close(); }catch(IOException ioe) {  }
         }        
     }
@@ -282,9 +308,7 @@ public class Session implements Runnable
         }
         else
         {
-            writer.println(PROTOCOLE + " " + FICHIERNONTROUVE);
-            writer.println();
-            writer.println(FICHIERNONTROUVE);
+            afficherPageErreur(FICHIERNONTROUVE);
         }
         return existe;
     }
