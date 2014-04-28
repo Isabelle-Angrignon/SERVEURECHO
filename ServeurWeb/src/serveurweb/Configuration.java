@@ -1,22 +1,27 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+// Configuration.java
+// Fait par : Simon Bouchard et Isabelle Angrignon
+// Fait le : 2014-04-28
+// But : Contien les informations nécessaire entre un serveur et un session pour le bon fonctionnement de la session
 
 package serveurweb;
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
 import java.net.*;
 import java.io.*;
 
 
 public class Configuration 
 {
+    //------------------------
+    // ATTRIBUT
+    //-----------------------
     private int port = 80;
     private boolean listage = false;
     private String index = "Index.html";
     private String racine = "c:\\www";
     final int NUMPORTMAX = 65535;
+    
+    //-------------------------
+    //CONSTRUCTEUR
+    //-------------------------
 
     public Configuration() 
     {
@@ -50,6 +55,11 @@ public class Configuration
         setIndex(index);
         setListage(listage);
     }
+    
+    
+    //---------------------------------
+    // MUTATEUR
+    //--------------------------------
     
     public void setListage (String listage ) throws Exception
     {
@@ -96,6 +106,11 @@ public class Configuration
     {
         this.index = Index;
     }
+    
+    //---------------------
+    //ACCESSEUR
+    //---------------------
+    
     public String getRacine()   {return this.racine;    }
     public String getNomIndex() {return this.index;    }
     public int getPort()        {return this.port;      }
