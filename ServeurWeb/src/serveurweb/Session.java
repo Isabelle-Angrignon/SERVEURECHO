@@ -6,6 +6,8 @@ package serveurweb;
 
 import java.net.*;
 import java.io.*;
+import java.text.*;
+import java.util.*;
 
 public class Session implements Runnable
 {
@@ -17,6 +19,7 @@ public class Session implements Runnable
     final String PROMPT = "=>";
     String accueil = "Magnifique serveur Web de Isabelle Angrignon et Simon Bouchard - version 1.0";
     String pathRep = "C:\\www";     // Path des fichier a télécherger
+    final String PROTOCOLE = "HTTP/1.0";
     //Messages validation de fichiers:
     final String FICHIERTROUVE = "200 Okay";                //|--------------------|//
     final String ERREURREQUETE = "400 Requete erronee";      //| Message d'erreurs  |//
@@ -78,25 +81,18 @@ public class Session implements Runnable
         boolean fini = false;
         try
         {
-            writer.println(accueil);
-            afficherListe(pathRep);
-            writer.print(PROMPT);
-            writer.flush();//autoflush ne marche pas sur les print sans ln
-            
-            client.setSoTimeout(DELAI);
-            while ( ! fini )
+            // recevoir requete  
+            String maligne;
+            String ligne = maligne = reader.readLine();
+            while (!ligne.equals("") )
             {
-                String ligne = reader.readLine();
-                if (ligne != null )
-                {
-                    TraitementRequete(ligne);
-                }
+                ligne = reader.readLine();
             }
-        }
-        catch( SocketTimeoutException ste )
-        {
-            writer.println("Votre delai de " + DELAI/1000 + " sec. est ecoule.");
-        }
+            {
+                //envoi page
+                TraitementRequete(maligne);
+            }
+        }        
         catch(IOException ioe)
         {
             //Rien a faire
@@ -107,6 +103,7 @@ public class Session implements Runnable
             System.out.println("Fermeture de session " + NumSession);
             try
             {
+                reader.close();
                 client.close();
             }
             catch(IOException ioe) {  }
@@ -123,13 +120,13 @@ public class Session implements Runnable
             {
                 
                 case "GET":
-                    if (laCommande.length == 2 )
+                    if (laCommande.length == 3 )
                     {
-                        traiterRequeteGet(laCommande[1]);
+                        traiterRequeteGet(laCommande[1]);                        
                     }
                     else
                     {
-                        writer.println(ERREURREQUETE);
+                        writer.println(PROTOCOLE + " " + ERREURREQUETE);
                     }
                     try
                     {
@@ -138,34 +135,90 @@ public class Session implements Runnable
                     break;
                     
                 default:
-                    writer.println(PASIMPLEMENTE);
+                    writer.println(PROTOCOLE + " " + PASIMPLEMENTE);
                     try { client.close(); }catch(IOException ioe) {  }
             }
         }
         else
         {
-            writer.println(ERREURREQUETE);
+            writer.println(PROTOCOLE + " " + ERREURREQUETE);
             try { client.close(); }catch(IOException ioe) {  }
         }
         writer.print(PROMPT);
         writer.flush();
     }
+    
     private void traiterRequeteGet(String nomFichier)
     {
-        String path = pathRep + "\\" + nomFichier;
+        String path = pathRep + nomFichier;
         if(validerFichier(path))
         {
             File fichier = new File(path);
             if ( !fichier.isDirectory())
             {
+                genererEnteteFichier(fichier);//ajouter un head
                 traiterFichier(fichier);
             }
             else
             {
-                afficherListe(path);
+                //serie de check index.html...et ultimement
+                genererEnteteDossier();//ajouter un head
+                traiterDossier(fichier);                
             }
         }
     }
+    
+    //cadeau du prof....
+    private String getDateRfc822(Long date)
+    {
+       SimpleDateFormat formatRfc822
+          = new SimpleDateFormat( "EEE', 'dd' 'MMM' 'yyyy' 'HH:mm:ss' 'Z",
+             Locale.US );
+
+       return formatRfc822.format( date );
+    }
+    private String getType(String extension)
+    {          
+        switch(extension)
+        {
+            case "gif":
+                return "image/gif";
+            case "html":
+                return "text/html";
+            case "jpeg":
+                return "image/jpeg";
+            case "jpg":
+                return "image/jpeg";
+            case "png":
+                return "image/png";
+            case "txt":
+                return "text/plain";
+            default:
+                return "";
+        }        
+    }
+    
+    private void genererEnteteFichier(File fichier)
+    {        
+        //PROTOCOLE + message réussite  AFFICHÉ PLUS HAUT
+        Long date = fichier.lastModified();
+        String type = getType(fichier.getName().split(".")[1]);
+        
+        writer.println("Date: "+ getDateRfc822(date));
+        //Server:
+        writer.println("Server: " + " tbd ");
+        writer.println("Content-Length: " + fichier.length());
+        //Si le type n'est pas géré, la ligne sera omise...
+        if (!type.equals(""))
+        {
+            writer.println("Content-Type: " + type);
+        }
+    }
+    private void genererEnteteDossier()
+    {
+        
+    }
+    
     private void traiterFichier (File  fichier)
     {
             int b = -1;
@@ -193,6 +246,12 @@ public class Session implements Runnable
             catch(IOException e) { e.printStackTrace(); }
     }
     
+    private void traiterDossier(File rep)
+    {
+        //serie de checks
+        String dossier = rep.getName();
+        afficherListe(dossier);//ajouter un head
+    }
     
     private boolean validerFichier(String nom)
     {
