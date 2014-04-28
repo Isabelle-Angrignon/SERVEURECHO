@@ -14,19 +14,18 @@ public class Session implements Runnable
     BufferedReader reader;  // Flux de texte 
     PrintWriter writer;     // Flux de texte
     Socket client;          // Le client passé par le serveur
-    int NumSession = 0;     
-    final int DELAI = 20000; //délai pour entrer la commande sinon fermeture
-    final String PROMPT = "=>";
-    String accueil = "Magnifique serveur Web de Isabelle Angrignon et Simon Bouchard - version 1.0";
+    int NumSession = 0;     // Pour fin de suivi des connections
     String pathRep = "C:\\www";     // Path des fichier a télécherger
+    final String NOMSERVEUR = "ServeurWeb IA & SB";
     final String PROTOCOLE = "HTTP/1.0";
+        
     //Messages validation de fichiers:
-    final String FICHIERTROUVE = "200 Okay";                //|--------------------|//
-    final String ERREURREQUETE = "400 Requete erronee";      //| Message d'erreurs  |//
-    final String PASIMPLEMENTE = "501 Non implemente";      //|                    |//
-    final String FICHIERNONTROUVE = "404 Non trouve";       //|--------------------|//
-    
-    
+    final String FICHIERTROUVE = "200 Okay";                
+    final String ERREURREQUETE = "400 Requete erronee";     //|--------------------|//
+    final String INTERDIT =      "403 Interdit";            //| Message d'erreurs  |//
+    final String FICHIERNONTROUVE = "404 Non trouve";       //|                    |//    
+    final String PASIMPLEMENTE = "501 Non implemente";      //|--------------------|//
+           
     // Constructeur
     public Session(Socket client , int NumeroSession , String path)
     {
@@ -82,15 +81,15 @@ public class Session implements Runnable
         try
         {
             // recevoir requete  
-            String maligne;
-            String ligne = maligne = reader.readLine();
+            String maLigne;
+            String ligne = maLigne = reader.readLine();
             while (!ligne.equals("") )
             {
                 ligne = reader.readLine();
             }
             {
                 //envoi page
-                TraitementRequete(maligne);
+                TraitementRequete(maLigne);
             }
         }        
         catch(IOException ioe)
@@ -143,9 +142,7 @@ public class Session implements Runnable
         {
             writer.println(PROTOCOLE + " " + ERREURREQUETE);
             try { client.close(); }catch(IOException ioe) {  }
-        }
-        writer.print(PROMPT);
-        writer.flush();
+        }        
     }
     
     private void traiterRequeteGet(String nomFichier)
@@ -169,7 +166,7 @@ public class Session implements Runnable
     }
     
     //cadeau du prof....
-    private String getDateRfc822(Long date)
+    private String getDateRfc822(Date date)
     {
        SimpleDateFormat formatRfc822
           = new SimpleDateFormat( "EEE', 'dd' 'MMM' 'yyyy' 'HH:mm:ss' 'Z",
@@ -194,25 +191,30 @@ public class Session implements Runnable
             case "txt":
                 return "text/plain";
             default:
-                return "";
+                return "";////?
         }        
     }
     
     private void genererEnteteFichier(File fichier)
     {        
         //PROTOCOLE + message réussite  AFFICHÉ PLUS HAUT
-        Long date = fichier.lastModified();
-        String type = getType(fichier.getName().split(".")[1]);
+        Date dateM = new Date(fichier.lastModified());
+        String extension = (fichier.getName().split("\\."))[1];
+        String type = getType(extension);
+        Date dateJ = new Date();
         
-        writer.println("Date: "+ getDateRfc822(date));
-        //Server:
-        writer.println("Server: " + " tbd ");
-        writer.println("Content-Length: " + fichier.length());
+        
+        writer.println("Server: " + NOMSERVEUR);
+        writer.println("Date: "+ getDateRfc822(dateJ));
         //Si le type n'est pas géré, la ligne sera omise...
         if (!type.equals(""))
         {
             writer.println("Content-Type: " + type);
         }
+        writer.println("Last-Modified: " + getDateRfc822(dateM));
+        writer.println("Content-Length: " + fichier.length());
+        
+        writer.println();
     }
     private void genererEnteteDossier()
     {
@@ -259,11 +261,13 @@ public class Session implements Runnable
         boolean existe = false;
         if (fichier.exists())
         {
-            writer.println(FICHIERTROUVE);
+            writer.println(PROTOCOLE + " " + FICHIERTROUVE);
             existe = true;
         }
         else
         {
+            writer.println(PROTOCOLE + " " + FICHIERNONTROUVE);
+            writer.println();
             writer.println(FICHIERNONTROUVE);
         }
         return existe;
