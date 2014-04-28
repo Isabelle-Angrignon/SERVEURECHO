@@ -15,7 +15,8 @@ public class Session implements Runnable
     PrintWriter writer;     // Flux de texte
     Socket client;          // Le client passé par le serveur
     int NumSession = 0;     // Pour fin de suivi des connections
-    String pathRep = "C:\\www";     // Path des fichier a télécherger
+    Configuration maConf;   // contient racine, index, listage
+ //   String pathRep = "C:\\www";     // Path des fichier a télécherger
     final String NOMSERVEUR = "ServeurWeb IA & SB";
     final String PROTOCOLE = "HTTP/1.0";
         
@@ -27,9 +28,9 @@ public class Session implements Runnable
     final String PASIMPLEMENTE = "501 Non implemente";      //|--------------------|//
            
     // Constructeur
-    public Session(Socket client , int NumeroSession , String path)
+    public Session(Socket client , int NumeroSession , Configuration maConf)
     {
-        this.pathRep = path;    // Le path est bon on le sait puisque le serveur l'a vérifié
+        this.maConf = maConf;    // Le path est bon on le sait puisque le serveur l'a vérifié
         try
         {
             this.client = client;                                               ////////////////////////////////////////////////
@@ -186,13 +187,13 @@ public class Session implements Runnable
     
     private void traiterRequeteGet(String nomFichier)
     {
-        String path = pathRep + nomFichier;
+        String path = maConf.getRacine() + nomFichier;
         if(validerFichier(path))
         {
-            File fichier = new File(path);
-            genererEntete(fichier);//ajouter un head
+            File fichier = new File(path);            
             if ( !fichier.isDirectory())
-            {                
+            {   
+                genererEntete(fichier);//ajouter un head
                 traiterFichier(fichier);
             }
             else
@@ -204,7 +205,7 @@ public class Session implements Runnable
     }
     private void traiterRequeteHead(String nomFichier)
     {
-        String path = pathRep + nomFichier;
+        String path = maConf.getRacine() + nomFichier;
         if(validerFichier(path))
         {
             File fichier = new File(path);
@@ -243,11 +244,16 @@ public class Session implements Runnable
     }
     
     private void genererEntete(File fichier)
-    {        
+    {      
+        String type ="";
         //PROTOCOLE + message réussite  AFFICHÉ PLUS HAUT
         Date dateM = new Date(fichier.lastModified());
-        String extension = (fichier.getName().split("\\."))[1];
-        String type = getType(extension);
+        if(fichier.isFile())
+        {
+            String extension = (fichier.getName().split("\\."))[1];
+            type = getType(extension);
+        }
+        
         Date dateJ = new Date();
                 
         writer.println("Server: " + NOMSERVEUR);
@@ -262,6 +268,8 @@ public class Session implements Runnable
         
         writer.println();
     }
+    
+    
     
     private void traiterFichier (File  fichier)
     {
@@ -292,9 +300,33 @@ public class Session implements Runnable
     
     private void traiterDossier(File rep)
     {
+        File index = new File(maConf.getRacine() +"\\" + rep.getName() + "\\" + maConf.getNomIndex());
         //serie de checks
-        String dossier = rep.getName();
-        afficherListe(dossier);//ajouter un head
+
+        //si index.html existe
+        if ((index.isFile()))
+        {
+            //afficher index.html            
+            genererEntete(index);
+            traiterFichier(index);
+        }
+        else
+        {
+            //sinon si listage = false, 
+            if (!maConf.getListage())
+            {
+                //afficher page 403
+                afficherPageErreur(INTERDIT);
+            }
+            else
+            {
+                //sinon générer liste.
+                //générer page avec liens...
+    /*            String dossier = rep.getName();
+                afficherListe(dossier);//ajouter un head    */
+            }
+        }
+        
     }
     
     private boolean validerFichier(String nom)

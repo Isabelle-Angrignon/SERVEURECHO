@@ -16,7 +16,7 @@ public class ServeurWeb {
     String listage = "non";
     String pathRep = "C:\\www"; 
     String racine = pathRep;
-   // Configuration maConf = new Configuration();
+    Configuration maConf = new Configuration();
     
     //Autres attibuts et constantes
     final int NUMPORTMAX = 65535;
@@ -58,9 +58,9 @@ public class ServeurWeb {
 	threadTerminateur.start();// au constructqeur, un thread lit en boucle        
     }
     
-    private void lireConfig()
+    private void lireConfig() throws Exception
     {  
-        String param ="";
+        String ligne ="";
         boolean fini = false;
         File config = new File("FichierServeur/config.txt");
         try
@@ -68,24 +68,25 @@ public class ServeurWeb {
            BufferedReader reader = new BufferedReader(new FileReader(config));
            while(!fini)
            {
-               param = reader.readLine();
-               if (!param.equals(""))
+               ligne = reader.readLine().trim();
+               if (!ligne.equals(""))
                {
-                   if ((param.split("=")[0]).equals("port"))
+                   String[] param = ligne.split("=");
+                   if ((param[0]).equals("port"))
                    {
-                      /* maConf.*/port = Integer.parseInt(reader.readLine().split("=")[1]);
+                        maConf.setPort(param[1]);                        
                    }
-                   else if ((param.split("=")[0]).equals("racine"))
+                   else if ((param[0]).equals("racine"))
                    {
-                       /*maConf.*/racine = reader.readLine().split("=")[1];
+                        maConf.setRacine(param[1]);
                    }
-                   else if ((param.split("=")[0]).equals("index"))
+                   else if ((param[0]).equals("index"))
                    {
-                 /*      maConf.*/index = reader.readLine().split("=")[1];
+                        maConf.setIndex(reader.readLine().split("=")[1]);
                    }
-                   else if ((param.split("=")[0]).equals("index"))
+                   else if ((param[0]).equals("index"))
                    {
-                   /*    maConf.*/listage = reader.readLine().split("=")[1];
+                         maConf.setListage(param[1]);
                    }
                }
                else 
@@ -142,7 +143,7 @@ public class ServeurWeb {
                         Socket client = serveur.accept();       // on attend la connexion le temps du DELAI
                         System.out.println( "Ouverture de la session " + NumSession );  
                         //...creer session
-                        Session session = new Session(client,NumSession,pathRep);   // On crée la session qui servira de "serveur" au client
+                        Session session = new Session(client,NumSession,maConf);   // On crée la session qui servira de "serveur" au client
                         Thread t = new Thread(session);             // on le lance
                         t.start();
                         NbrConnexion++;     // le nbr de connexion sera décrémenter par la session

@@ -5,7 +5,7 @@
  */
 
 package serveurweb;
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
+//import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
 import java.net.*;
 import java.io.*;
 
@@ -99,8 +99,5 @@ public class Configuration
     public String getRacine()   {return this.racine;    }
     public String getNomIndex() {return this.index;    }
     public int getPort()        {return this.port;      }
-    public boolean getListage() {return this.listage;   }
-    
-    
-    
+    public boolean getListage() {return this.listage;   }     
 }
