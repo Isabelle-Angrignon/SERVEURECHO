@@ -94,7 +94,7 @@ public class Configuration
     }
     public void setRacine(String racine) throws Exception
     {
-        if (!(new File(racine).isDirectory())) // Si le dossiern'existe pas 
+        if (!((new File(racine)).isDirectory())) // Si le dossiern'existe pas 
         {
             throw new Exception("Le serveur a tente de se lancer sur le repertoire par defaut "+ racine+" mais ce repertoire n'existe pas !" );
         }

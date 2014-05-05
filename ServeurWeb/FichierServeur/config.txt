@@ -1,4 +1,4 @@
 port=85
-racine=c:/wwww
+racine=C:\www
 index=index.html
 listage=oui

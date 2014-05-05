@@ -11,9 +11,9 @@ import java.io.*;
 public class ServeurWeb {
     
     //attributs config
-    int port = 80; //valeur par defaut
-    String index = "";
-    String listage = "non";
+//    int port = 80; //valeur par defaut
+    String index = "";///////////////
+    String listage = "non";/////////////////
     String pathRep = "C:\\www"; 
     String racine = pathRep;
     Configuration maConf = new Configuration();
@@ -28,17 +28,14 @@ public class ServeurWeb {
     
     
     // S'assure que le port rentre dans les limitations des ports habituel.
-    void SetPort(int p)
+    void SetPort(int p)throws Exception
     {
-        if (p < NUMPORTMAX && p > 0)
-        {
-            this.port = p;
-        }
+       maConf.setPort(p);
     }
     // Entete du serveur
     void AfficherPort()
     {
-        System.out.println("Serveur en ligne (port TCP " + port + ",racine="+pathRep+")");
+        System.out.println("Serveur en ligne (port TCP " + maConf.getPort() + ",racine="+maConf.getRacine()+")");
     }
     
     
@@ -46,12 +43,12 @@ public class ServeurWeb {
     public ServeurWeb (String tab[]) throws Exception
     { 
         // gérer fichier config
- //       lireConfig();
+        lireConfig();
         
         GestionParametre(tab);
-        if (!(new File(pathRep).isDirectory())) // Si le dossier par défaut n'existe pas et que le dossier n'a pas été enter ou est incorecte on court apres le trouble
+        if (!(new File(maConf.getRacine()).isDirectory())) // Si le dossier par défaut n'existe pas et que le dossier n'a pas été enter ou est incorecte on court apres le trouble
         {
-            throw new Exception("Le serveur a tente de se lancer sur le repertoire par defaut "+ pathRep+" mais ce repertoire n'existe pas !" );
+            throw new Exception("Le serveur a tente de se lancer sur le repertoire par defaut "+ maConf.getRacine()+" mais ce repertoire n'existe pas !" );
         }       
         Terminateur leTerminator = new Terminateur();   // Initialisation du terminateur qui tuera le serveur si on entre la touche Q
 	threadTerminateur = new Thread(leTerminator);
@@ -68,10 +65,10 @@ public class ServeurWeb {
            BufferedReader reader = new BufferedReader(new FileReader(config));
            while(!fini)
            {
-               ligne = reader.readLine().trim();
-               if (!ligne.equals(""))
+               ligne = reader.readLine();
+               if (ligne != null)
                {
-                   String[] param = ligne.split("=");
+                   String[] param = ligne.trim().split("=");
                    if ((param[0]).equals("port"))
                    {
                         maConf.setPort(param[1]);                        
@@ -82,9 +79,9 @@ public class ServeurWeb {
                    }
                    else if ((param[0]).equals("index"))
                    {
-                        maConf.setIndex(reader.readLine().split("=")[1]);
+                        maConf.setIndex(param[1]);
                    }
-                   else if ((param[0]).equals("index"))
+                   else if ((param[0]).equals("listage"))
                    {
                          maConf.setListage(param[1]);
                    }
@@ -106,7 +103,7 @@ public class ServeurWeb {
             try
             {
                 int p = Integer.parseInt(tab[0]);           // Pour s'assurer que on a pas entrer genre allo sur la ligne de commande
-                SetPort(p);
+                maConf.setPort(p);
             }
             catch (Exception e) { /*Fait rien, utilise le port par défaut*/ }
         }
@@ -115,10 +112,9 @@ public class ServeurWeb {
             try
             {
                 File dossier = new File(tab[1]);
-                if ( dossier.isDirectory())         // Si le dossier passer en parametre existe ...
-                {
-                    pathRep = tab[1];               // Il devient le path sinon on garde celui par défaut www
-                }
+                
+                    maConf.setRacine(tab[1]);          // Il devient le path sinon on garde celui par défaut www
+                
             }
             catch ( Exception e) {}
         }
@@ -131,7 +127,7 @@ public class ServeurWeb {
        
         try
         {
-            ServerSocket serveur = new ServerSocket( port );    // |
+            ServerSocket serveur = new ServerSocket( maConf.getPort() );    // |
             AfficherPort();                                     // | Bienvenue du serveur ! 
             while(threadTerminateur.isAlive())  // Tant que le terminateur n'est pas mort 
             {
@@ -167,18 +163,18 @@ public class ServeurWeb {
         }
         catch ( IOException ioe )
         {
-            throw new Exception("Le serveur a tente de se lancer sur ce port : "+ port+" mais il est deja occupe");
+            throw new Exception("Le serveur a tente de se lancer sur ce port : "+ maConf.getPort()+" mais il est deja occupe");
         }
     }
     
     public static void main( String args[] )
     {
-        try
+       try
         {
             ServeurWeb serveur = new ServeurWeb(args);
             serveur.Traitement();
         }
-        catch (Exception e) {System.out.println(e.getMessage());}   // On peut se permettre de ne pas réinterpéter les messages d'érreure puisque ce sont les notres.
+       catch (Exception e) {System.out.println(e.getMessage());}   // On peut se permettre de ne pas réinterpéter les messages d'érreure puisque ce sont les notres.
         
     }
 }

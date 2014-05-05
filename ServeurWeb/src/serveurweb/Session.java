@@ -49,6 +49,7 @@ public class Session implements Runnable
     // Affiche la liste de fichier a télécharger
     private void afficherListe(String rep)
     {
+        
         File repertoire = new File(rep);
         String[] fichiers = repertoire.list();
         writer.println("Contenu du repertoire " + rep);                         ///////////////////////////////////////////////
@@ -61,19 +62,65 @@ public class Session implements Runnable
             writer.println(fichiers.length + " fichier(s) disponible(s)");      ////////////////////////////////////////////////
         }
     }
+    // Affiche la liste de fichier a télécharger
+    private void afficherPageRepertoire(String rep)
+    {
+        String nomRep = rep;//nomRep est utilisé pour l'affichage sur l page web seulement
+        if (rep.equals("/"))
+        {
+            nomRep = "";
+        }
+        writer.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
+        writer.println("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+        writer.println("<head>");
+        writer.println("<meta content=\"text/html; charset=utf-8\" http-equiv=\"Content-Type\" />");
+        writer.println("<title>Path Index</title>");
+        writer.println(" </head>");
+        writer.println("<body>");
+        writer.println("<h1>Contenu du repertoire " +maConf.getRacine()+nomRep + "</h1>");
+        writer.println("<p>");
+        
+        File repertoire = new File(maConf.getRacine()+rep);
+        String[] fichiers = repertoire.list();                        ///////////////////////////////////////////////
+        if (fichiers != null)                                                   //       Pour chaque fichier dans le 
+        {                                                                       //       path on appel la méthode afficher
+            for (String fichier:fichiers)                                       //       info qui affichera de facon structurer 
+            {                                                                   //       le fichier
+                afficherInfos(rep, fichier);                                    //
+                  writer.println("</br>");
+            }                                                                   //
+            writer.println(fichiers.length + " fichier(s) disponible(s)");      ////////////////////////////////////////////////
+        }
+        
+        writer.println("</p>");
+        writer.println("</body>");
+        writer.println("</html>");
+        
+    }
     
     // Sert a structurer la facon d'afficher les informations relier sur le fichier
     private void afficherInfos(String path, String fichier)
     {
-        File f = new File(path + "\\" + fichier);
+        File f = new File(maConf.getRacine() + "\\" +path + "\\" + fichier);
+        if(!path.equalsIgnoreCase("/") && !path.equalsIgnoreCase("\\") )
+        {
+            path += "/";
+        }
+        writer.println("<a href=\""+ path + f.getName() +"\">");
         if (!f.isDirectory())
         {
-            writer.printf("%-30s %10s %tD %n", "    " + fichier, f.length(), f.lastModified()); // Utilise printf vielle méthode du c
+            //writer.printf("%-30s %10s %tD %n", "    " + fichier, f.length(), f.lastModified()); // Utilise printf vielle méthode du c
+            writer.print("    ");
+            writer.print(f.getName());
+            writer.print("        ");
+            writer.print(fichier + "     "+ f.length() + "      " + f.lastModified()); // Utilise printf vielle méthode du c
+            writer.println();
         }
         else
         {
             writer.printf("%-41s %tD %n", " [ ]" + fichier, f.lastModified());      // Utilise printf vielle méthode du c
         }
+        writer.println("</a>");
     }
     
     public void run ()
@@ -164,7 +211,7 @@ public class Session implements Runnable
                     }
                     else
                     {
-                        afficherPageErreur(ERREURREQUETE);
+                        writer.println(PROTOCOLE + " " + ERREURREQUETE);
                     }
                     try
                     {
@@ -197,19 +244,26 @@ public class Session implements Runnable
                 traiterFichier(fichier);
             }
             else
-            {
-                //serie de check index.html...et ultimement                
-                traiterDossier(fichier);                
+            {   //generer entete est géré par traiter dossier                             
+                traiterDossier(nomFichier);                
             }
+        }
+        else
+        {
+            afficherPageErreur(FICHIERNONTROUVE);
         }
     }
     private void traiterRequeteHead(String nomFichier)
     {
-        String path = maConf.getRacine() + nomFichier;
+        String path = maConf.getRacine() + "\\"+nomFichier;
         if(validerFichier(path))
         {
             File fichier = new File(path);
             genererEntete(fichier);//ajouter un head            
+        }
+        else
+        {
+            writer.println(PROTOCOLE + " " + FICHIERNONTROUVE);             
         }
     }
             
@@ -259,17 +313,23 @@ public class Session implements Runnable
         writer.println("Server: " + NOMSERVEUR);
         writer.println("Date: "+ getDateRfc822(dateJ));
         //Si le type n'est pas géré, la ligne sera omise...
-        if (!type.equals(""))
+        if (type.equals(""))
+        {
+            //il s'agit d'un dossier
+            writer.println("Content-Type: " + "text/HTML");
+        }
+        else
         {
             writer.println("Content-Type: " + type);
         }
         writer.println("Last-Modified: " + getDateRfc822(dateM));
-        writer.println("Content-Length: " + fichier.length());
+        if(fichier.length() != 0 )
+        {
+            writer.println("Content-Length: " + fichier.length());
+        }
         
         writer.println();
     }
-    
-    
     
     private void traiterFichier (File  fichier)
     {
@@ -298,9 +358,10 @@ public class Session implements Runnable
             catch(IOException e) { e.printStackTrace(); }
     }
     
-    private void traiterDossier(File rep)
+    private void traiterDossier(String rep)
     {
-        File index = new File(maConf.getRacine() +"\\" + rep.getName() + "\\" + maConf.getNomIndex());
+      
+        File index = new File(maConf.getRacine() +"\\" + rep + "\\" + maConf.getNomIndex());
         //serie de checks
 
         //si index.html existe
@@ -316,14 +377,14 @@ public class Session implements Runnable
             if (!maConf.getListage())
             {
                 //afficher page 403
+                //générerEntete est géré par afficher page d'erreur
                 afficherPageErreur(INTERDIT);
             }
             else
             {
                 //sinon générer liste.
-                //générer page avec liens...
-    /*            String dossier = rep.getName();
-                afficherListe(dossier);//ajouter un head    */
+                genererEntete(index);
+                afficherPageRepertoire(rep);                
             }
         }
         
@@ -337,11 +398,7 @@ public class Session implements Runnable
         {
             writer.println(PROTOCOLE + " " + FICHIERTROUVE);
             existe = true;
-        }
-        else
-        {
-            afficherPageErreur(FICHIERNONTROUVE);
-        }
+        }       
         return existe;
     }
 }
