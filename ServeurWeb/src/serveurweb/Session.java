@@ -15,8 +15,7 @@ public class Session implements Runnable
     PrintWriter writer;     // Flux de texte
     Socket client;          // Le client passé par le serveur
     int NumSession = 0;     // Pour fin de suivi des connections
-    Configuration maConf;   // contient racine, index, listage
- //   String pathRep = "C:\\www";     // Path des fichier a télécherger
+    Configuration maConf;   // contient racine, index, listage 
     final String NOMSERVEUR = "ServeurWeb IA & SB";
     final String PROTOCOLE = "HTTP/1.0";
         
@@ -44,12 +43,10 @@ public class Session implements Runnable
         {
             System.out.println("On est dans marde");
         }
-    }
-    
+    }    
     // Affiche la liste de fichier a télécharger
     private void afficherListe(String rep)
-    {
-        
+    {        
         File repertoire = new File(rep);
         String[] fichiers = repertoire.list();
         writer.println("Contenu du repertoire " + rep);                         ///////////////////////////////////////////////
@@ -65,7 +62,7 @@ public class Session implements Runnable
     // Affiche la liste de fichier a télécharger
     private void afficherPageRepertoire(String rep)
     {
-        String nomRep = rep;//nomRep est utilisé pour l'affichage sur l page web seulement
+        String nomRep = rep;//nomRep est utilisé pour l'affichage sur une page web seulement
         if (rep.equals("/"))
         {
             nomRep = "";
@@ -78,30 +75,30 @@ public class Session implements Runnable
         writer.println(" </head>");
         writer.println("<body>");
         writer.println("<h1>Contenu du repertoire " +maConf.getRacine()+nomRep + "</h1>");
-        writer.println("<p>");
+        writer.println("<pre>");
         
         File repertoire = new File(maConf.getRacine()+rep);
-        String[] fichiers = repertoire.list();                        ///////////////////////////////////////////////
-        if (fichiers != null)                                                   //       Pour chaque fichier dans le 
-        {                                                                       //       path on appel la méthode afficher
-            for (String fichier:fichiers)                                       //       info qui affichera de facon structurer 
-            {                                                                   //       le fichier
-                afficherInfos(rep, fichier);                                    //
-                  writer.println("</br>");
-            }                                                                   //
-            writer.println(fichiers.length + " fichier(s) disponible(s)");      ////////////////////////////////////////////////
-        }
-        
-        writer.println("</p>");
+        String[] fichiers = repertoire.list();                                  
+        if (fichiers != null)                                                   
+        {                                             
+            for (String fichier:fichiers)                                       ///////////////////////////////////////////////
+            {                                                                   //       Pour chaque fichier dans le 
+                                                                                //       path on appel la méthode afficher
+                afficherInfos(rep, fichier);                                    //       info qui affichera de facon structurer 
+                                                                                //       le fichier
+                                                                                //
+            }                                                                   //////////////////////////////////////////////
+            writer.println(fichiers.length + " fichier(s) disponible(s)");      
+        }        
+        writer.println("</pre>");
         writer.println("</body>");
-        writer.println("</html>");
-        
-    }
-    
+        writer.println("</html>");        
+    }    
     // Sert a structurer la facon d'afficher les informations relier sur le fichier
     private void afficherInfos(String path, String fichier)
     {
         File f = new File(maConf.getRacine() + "\\" +path + "\\" + fichier);
+        Date date = new Date(f.lastModified());
         if(!path.equalsIgnoreCase("/") && !path.equalsIgnoreCase("\\") )
         {
             path += "/";
@@ -109,20 +106,16 @@ public class Session implements Runnable
         writer.println("<a href=\""+ path + f.getName() +"\">");
         if (!f.isDirectory())
         {
-            //writer.printf("%-30s %10s %tD %n", "    " + fichier, f.length(), f.lastModified()); // Utilise printf vielle méthode du c
-            writer.print("    ");
-            writer.print(f.getName());
-            writer.print("        ");
-            writer.print(fichier + "     "+ f.length() + "      " + f.lastModified()); // Utilise printf vielle méthode du c
+            writer.print(" ");            
+            writer.print(" ");
+            writer.print(fichier + "</a> "+ f.length() + " " + getDateRfc822(date)); // Utilise printf vielle méthode du c
             writer.println();
         }
         else
         {
-            writer.printf("%-41s %tD %n", " [ ]" + fichier, f.lastModified());      // Utilise printf vielle méthode du c
+            writer.printf("%-41s %tD %n", " [ ]" + fichier+"</a> " , f.lastModified());      // Utilise printf vielle méthode du c
         }
-        writer.println("</a>");
-    }
-    
+    }    
     public void run ()
     {
         boolean fini = false;
@@ -154,8 +147,7 @@ public class Session implements Runnable
             }
             catch(IOException ioe) {  }
         }
-    }
-    
+    }    
     private void afficherPageErreur(String erreur)
     {        
         File fichierErreur;        
@@ -180,8 +172,7 @@ public class Session implements Runnable
         writer.println(PROTOCOLE + " " + erreur); 
         genererEntete(fichierErreur);
         traiterFichier(fichierErreur);
-    }
-    
+    }    
     private void TraitementRequete (String ligne)
     {
         String[] laCommande = ligne.trim().split("\\s+");
@@ -217,9 +208,7 @@ public class Session implements Runnable
                     {
                         client.close();
                     }catch(IOException ioe) {  }
-                    break;    
-                    
-                    
+                    break;  
                 default:
                     afficherPageErreur(PASIMPLEMENTE);
                     try { client.close(); }catch(IOException ioe) {  }
@@ -230,8 +219,7 @@ public class Session implements Runnable
             afficherPageErreur(ERREURREQUETE);
             try { client.close(); }catch(IOException ioe) {  }
         }        
-    }
-    
+    }    
     private void traiterRequeteGet(String nomFichier)
     {
         String path = maConf.getRacine() + nomFichier;
@@ -265,8 +253,7 @@ public class Session implements Runnable
         {
             writer.println(PROTOCOLE + " " + FICHIERNONTROUVE);             
         }
-    }
-            
+    }            
     //cadeau du prof....
     private String getDateRfc822(Date date)
     {
@@ -287,16 +274,15 @@ public class Session implements Runnable
             case "jpeg":
                 return "image/jpeg";
             case "jpg":
-                return "image/jpeg";
+                return "image/jpeg";            
             case "png":
                 return "image/png";
             case "txt":
                 return "text/plain";
             default:
-                return "";////?
+                return "";
         }        
-    }
-    
+    }    
     private void genererEntete(File fichier)
     {      
         String type ="";
@@ -306,10 +292,8 @@ public class Session implements Runnable
         {
             String extension = (fichier.getName().split("\\."))[1];
             type = getType(extension);
-        }
-        
-        Date dateJ = new Date();
-                
+        }        
+        Date dateJ = new Date();                
         writer.println("Server: " + NOMSERVEUR);
         writer.println("Date: "+ getDateRfc822(dateJ));
         //Si le type n'est pas géré, la ligne sera omise...
@@ -326,11 +310,9 @@ public class Session implements Runnable
         if(fichier.length() != 0 )
         {
             writer.println("Content-Length: " + fichier.length());
-        }
-        
+        }        
         writer.println();
-    }
-    
+    }    
     private void traiterFichier (File  fichier)
     {
             int b = -1;
@@ -356,8 +338,7 @@ public class Session implements Runnable
                 out.close();
             }
             catch(IOException e) { e.printStackTrace(); }
-    }
-    
+    }    
     private void traiterDossier(String rep)
     {
       
@@ -388,8 +369,7 @@ public class Session implements Runnable
             }
         }
         
-    }
-    
+    }    
     private boolean validerFichier(String nom)
     {
         File fichier = new File(nom);
